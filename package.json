@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/CodedJimmy/electron-test/issues"
   },
-  "homepage": "https://github.com/CodedJimmy/electron-test#readme"
+  "homepage": "https://github.com/CodedJimmy/electron-test#readme",
+  "dependencies": {
+    "discord.js": "^13.1.0"
+  }
 }
