@@ -1,9 +1,11 @@
 const {Client, Intents, Collection} = require("discord.js")
-const {REST} = require("@discordjs/")
+const {REST} = require("@discordjs/REST")
+const {Routes} = require("discord-api-types/v9")
 const fs = require("fs")
 const botIntents = new Intents()
 botIntents.add(Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_INTEGRATIONS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES)
-
+const rest = new REST({version: "9"}).setToken(process.env.TOKEN)
+const slashcommanddata = []
 let botClient = new Client({intents: botIntents})
 
 botClient.commands = new Collection()
@@ -20,6 +22,23 @@ cmdFiles.forEach((file) => {
     })
 })
 
+for(let cmd of botClient.commands){
+    slashcommanddata.push({name: cmd[1].name, description: cmd[1].desc})
+}
+
+function handleGuild(id){
+    console.log(`Began refreshing slash commands for guild: ${id}`)
+     try{
+         rest.put(Routes.applicationGuildCommands(botClient.user.id, id), {body: slashcommanddata})
+    }catch(err){
+        console.log(`An error occurred while refreshing slash commands for the guild ${id}`)
+    }
+}
+
+botClient.on("guildCreate", (guild) => {
+    handleGuild(guild.id)
+})
+
 botClient.on("interactionCreate", (interaction) => {
     if (!interaction.isCommand()){
         return;
@@ -29,7 +48,10 @@ botClient.on("interactionCreate", (interaction) => {
 
 
 botClient.on("ready", () => {
-
+    for (let guild of botClient.guilds.cache){
+        handleGuild(guild[1].id)
+    }
+    /*
     const commands = botClient.application.commands
 
     for(let cmd of botClient.commands){
@@ -47,6 +69,7 @@ botClient.on("ready", () => {
             })
         }
     }
+    */
 
     console.log(`Logged In As ${botClient.user.username}#${botClient.user.discriminator}`)
 })
