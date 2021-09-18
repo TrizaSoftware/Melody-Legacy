@@ -23,7 +23,14 @@ cmdFiles.forEach((file) => {
 })
 
 for(let cmd of botClient.commands){
-    slashcommanddata.push({name: cmd[1].name, description: cmd[1].desc})
+    if (!cmd[1].slash){
+        return;
+    }
+    if(!cmd[1].slashoptions){
+        slashcommanddata.push({name: cmd[1].name, description: cmd[1].desc})
+    }else{
+        slashcommanddata.push({name: cmd[1].name, description: cmd[1].desc, options: [cmd[1].slashoptions]})
+    }
 }
 
 function handleGuild(id){
@@ -43,7 +50,9 @@ botClient.on("interactionCreate", (interaction) => {
     if (!interaction.isCommand()){
         return;
     }
-    interaction.reply("Test")
+    if(botClient.commands.get(interaction.commandName)){
+        botClient.commands.get(interaction.commandName).execute("interaction", interaction, interaction.options._hoistedOptions)
+    }
 })
 
 
@@ -79,7 +88,12 @@ botClient.on("debug", (message) => {
 })
 
 botClient.on("messageCreate", (message) => {
-
+    if(!message.content.startsWith(process.env.PREFIX)){return;}
+    const data = message.content.split(process.env.PREFIX)[1].split(" ")
+    const command = data[0]
+    const args = data.slice(1)
+    const cmdfile = botClient.commands.get(command) || botClient.commands.get(botClient.aliases.get(command))
+    cmdfile.execute("chat", message, args)
 })
 
 
