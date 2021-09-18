@@ -57,9 +57,14 @@ botClient.on("interactionCreate", (interaction) => {
 
 
 botClient.on("ready", () => {
+    const statuses = [["WATCHING", "The T:Riza Corporation"], ["PLAYING", "Some good tunes!"]]
     for (let guild of botClient.guilds.cache){
         handleGuild(guild[1].id)
     }
+    setInterval(function(){
+        let selectedstatus = statuses[Math.floor(Math.random() * statuses.length)]
+        botClient.user.setActivity(selectedstatus[1], {type: selectedstatus[0]})
+    }, 10000)
     /*
     const commands = botClient.application.commands
 
