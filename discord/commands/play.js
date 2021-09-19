@@ -1,5 +1,6 @@
 const commandBase = require("../utils/commandBase")
 const embedBase = require("../utils/embedBase")
+const voice = require("@discordjs/voice")
 
 
 module.exports = class Command extends commandBase{
@@ -23,8 +24,7 @@ module.exports = class Command extends commandBase{
           }else{
             query = args[0].value
           }
-         let channel = message.guild.channels.cache.find(channel => channel.id == message.member.voice.channel.id)
-         console.log(channel)
+         voice.joinVoiceChannel({channelId: message.member.voice.channel.id, guildId: message.guild.id, adapterCreator: message.member.voice.channel.guild.voiceAdapterCreator})
         }
     }
 }
