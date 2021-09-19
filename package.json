@@ -27,6 +27,7 @@
     "node-fetch": "^3.0.0",
     "nodemon": "^2.0.12",
     "opusscript": "^0.0.8",
-    "soundcloud-downloader": "^1.0.0"
+    "soundcloud-downloader": "^1.0.0",
+    "ytdl-core": "^4.9.1"
   }
 }
