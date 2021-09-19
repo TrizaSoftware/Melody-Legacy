@@ -1,6 +1,7 @@
 const commandBase = require("../utils/commandBase")
 const embedBase = require("../utils/embedBase")
 
+
 module.exports = class Command extends commandBase{
     constructor(){
         super("play", "Music", ["p", "song"], "Plays Music", true, {name: "search_term", type: 3, description: "The song you want to play.", required: true})
@@ -22,6 +23,8 @@ module.exports = class Command extends commandBase{
           }else{
             query = args[0].value
           }
+         let channel = message.guild.channels.cache.find(channel => channel.id == message.member.voice.channel.id)
+         console.log(channel)
         }
     }
 }

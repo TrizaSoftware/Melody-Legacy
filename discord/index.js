@@ -104,3 +104,5 @@ botClient.on("messageCreate", (message) => {
 
 
 botClient.login(process.env.TOKEN)
+
+module.exports.bot = botClient
