@@ -3,7 +3,7 @@ const embedBase = require("../utils/embedBase")
 
 module.exports = class Command extends commandBase{
     constructor(){
-        super("play", "Music", ["p", "song"], "Plays Music", true, {name: "query", type: 3, description: "The song you want to play.", required: true})
+        super("play", "Music", ["p", "song"], "Plays Music", true, {name: "search_term", type: 3, description: "The song you want to play.", required: true})
     }
     async execute(type, message, args){
         if(type == "interaction"){
@@ -13,6 +13,15 @@ module.exports = class Command extends commandBase{
         }
         if(!message.member.voice.channel){
             message.reply({embeds: [new embedBase("Error", "You must be in a Voice Channel to run this command.")]})
+        }else{
+          let query
+          if(args[0] && type == "chat"){
+            query = args.join(" ")
+          }else if(!args[0] && type == "chat"){
+            message.reply({embeds: [new embedBase("Error", "You must specify a search term!")]})
+          }else{
+            query = args[0].value
           }
+        }
     }
 }
