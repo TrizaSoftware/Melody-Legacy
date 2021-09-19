@@ -57,7 +57,7 @@ botClient.on("interactionCreate", (interaction) => {
 
 
 botClient.on("ready", () => {
-    const statuses = [["WATCHING", "The T:Riza Corporation"], ["PLAYING", "Some good tunes!"], ["PLAYING", "The legend that was on the cord!"]]
+    const statuses = [["WATCHING", "The T:Riza Corporation"], ["PLAYING", "Some good tunes!"], ["PLAYING", "The legend that was on the cord!"], ["PLAYING", `${process.env.PREFIX}help | ${process.env.PREFIX}info`], ["WATCHING", "Jimmy!"]]
     for (let guild of botClient.guilds.cache){
         handleGuild(guild[1].id)
     }
