@@ -6,6 +6,7 @@ module.exports.voiceConnectionManager = function(channelId){
 
 module.exports.voiceConnectionManager = class voiceConnectionManager{
     constructor(){
-
+       let event = this.createEvent("Event")
+       event.initEvent("Notification", true, true)
     }
 }
