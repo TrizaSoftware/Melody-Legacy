@@ -1,7 +1,7 @@
 const voiceConnectionManagers = {}
 const events = require("events")
 
-module.exports.voiceConnectionManager = function(channelId){
+module.exports.getVCManager = function(channelId){
     return voiceConnectionManagers[channelId]
 }
 

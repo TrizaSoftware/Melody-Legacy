@@ -1,5 +1,5 @@
 const {Client, Intents, Collection} = require("discord.js")
-const {REST} = require("@discordjs/REST")
+const {REST} = require("@discordjs/rest")
 const {Routes} = require("discord-api-types/v9")
 const fs = require("fs")
 const botIntents = new Intents()
