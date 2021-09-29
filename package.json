@@ -1,10 +1,14 @@
 {
   "name": "melody",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "build/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ."
+    "start": "node .",
+    "build": "eslint src && tsc",
+    "dev": "nodemon --ext ts,json --watch src --exec ts-node -r dotenv-flow/config ./src/index.ts",
+    "lint": "eslint src && prettier --check src",
+    "lint:fix": "eslint --fix src && prettier --write src"
   },
   "engines": {
     "node": "16.x"
@@ -30,9 +34,16 @@
     "ytdl-core": "^4.9.1"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.32.0",
+    "@typescript-eslint/parser": "^4.32.0",
     "discord-api-types": "^0.23.1",
     "dotenv-flow": "^3.2.0",
-    "nodemon": "^2.0.13"
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "nodemon": "^2.0.13",
+    "prettier": "2.4.1",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.3"
   },
   "keywords": [],
   "description": "",
