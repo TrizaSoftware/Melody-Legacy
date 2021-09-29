@@ -1,14 +1,15 @@
 const voiceConnectionManagers = {}
 const events = require("events")
 
-module.exports.getVCManager = function(channelId){
-    return voiceConnectionManagers[channelId]
-}
+module.exports = class VoiceConnectionManager{
+  static getVCManager(channelId){
 
-module.exports.voiceConnectionManager = class voiceConnectionManager{
-    constructor(){
+  }
+  eventEmitter;
+    constructor(channelId){
         const EventEmitter = new events.EventEmitter()
         this.eventEmitter = EventEmitter
-        return this
+        voiceConnectionManagers[channelId] = this
+        EventEmitter.emit("test")
     }
 }
