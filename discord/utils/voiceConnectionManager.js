@@ -5,7 +5,7 @@ module.exports.fetchVCManager = function(channelId){
     return voiceConnectionManagers[channelId]
 }
 
-module.exports.voiceConnectionManager = class voiceConnectionManager{
+module.exports.VoiceConnectionManager = class VoiceConnectionManager{
     constructor(channelId){
         const EventEmitter = new events.EventEmitter()
         this.eventEmitter = EventEmitter

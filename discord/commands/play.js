@@ -1,6 +1,6 @@
 const commandBase = require("../utils/commandBase")
 const embedBase = require("../utils/embedBase")
-const {voiceConnectionManager} = require("../utils/voiceConnectionManager")
+const {VoiceConnectionManager} = require("../utils/voiceConnectionManager")
 const voice = require("@discordjs/voice")
 
 
@@ -30,5 +30,9 @@ module.exports = class Command extends commandBase{
            console.log(data)
          })
         }
+        let vcm = new VoiceConnectionManager(message.member.voice.channel.id)
+        vcm.eventEmitter.on("test", (data)=> {
+          console.log("test")
+        })
     }
 }
