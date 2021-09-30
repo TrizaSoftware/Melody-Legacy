@@ -50,6 +50,10 @@ export default class BotClient extends Client {
     this.on('debug', (message) => {
       console.log(message);
     });
+
+    this.on('guildCreate', (guild) => {
+      this.updateGuildSlashCommands(guild.id);
+    });
   }
 
   private async updateGuildSlashCommands(guildId: Snowflake): Promise<void> {
@@ -57,7 +61,7 @@ export default class BotClient extends Client {
     console.log(`Began refreshing slash commands for guild: ${guildId}`);
     try {
       await this.discordRestAPI.put(Routes.applicationGuildCommands(this.user.id, guildId), {
-        body: Array.from(BotClient.commands.values()).map(command => command.slashOptions.toJSON()),
+        body: Array.from(BotClient.commands.values()).map((command) => command.slashOptions.toJSON()),
       });
     } catch (err) {
       console.log(`An error occurred while refreshing slash commands for the guild ${guildId}`);

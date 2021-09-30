@@ -2,9 +2,9 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import { CommandInteraction, CommandInteractionOption } from 'discord.js';
 
 export enum CommandCategory {
-  RANDOM = 'Random',
-  INFO = 'Information',
-  MUSIC = 'Music',
+  Random = 'Random',
+  Info = 'Information',
+  Music = 'Music',
 }
 
 export type CommandExecuteFunction = (
