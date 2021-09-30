@@ -1,8 +1,9 @@
-import { ActivityOptions, Client, Intents, Snowflake } from 'discord.js';
+import { ActivityOptions, Client, Intents, MessageEmbed, MessageEmbedOptions, Snowflake } from 'discord.js';
 import * as commands from './commands';
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
 import Command from './commands/Command';
+import CommandError from './util/CommandError';
 
 export default class BotClient extends Client {
   static statuses: [ActivityOptions['type'], string][] = [
@@ -33,10 +34,21 @@ export default class BotClient extends Client {
 
   constructor() {
     super({ intents: BotClient.intents });
+    this.init();
+  }
 
-    this.on('interactionCreate', (interaction) => {
+  private init() {
+    this.on('interactionCreate', async (interaction) => {
       if (!interaction.isCommand() || !BotClient.commands.has(interaction.commandName)) return;
-      BotClient.commands.get(interaction.commandName)?.execute(interaction, interaction.options.data);
+      try {
+        await BotClient.commands.get(interaction.commandName)?.execute(interaction, interaction.options.data);
+      } catch (err) {
+        if (err instanceof CommandError) {
+          await interaction.reply({ embeds: [BotClient.createErrorEmbed(err.embedOptions)] });
+        } else {
+          console.error(err);
+        }
+      }
     });
 
     this.on('ready', async () => {
@@ -71,5 +83,22 @@ export default class BotClient extends Client {
   login(token: string): ReturnType<Client['login']> {
     this.discordRestAPI.setToken(token);
     return super.login(token);
+  }
+
+  static createEmbed({
+    color = '#369457',
+    footer = { text: `© T:Riza Corp 2020 - ${new Date().getFullYear()}` },
+    timestamp = Date.now(),
+    ...data
+  }: Require<MessageEmbedOptions, 'title' | 'description'>): MessageEmbed {
+    return new MessageEmbed({ color, footer, timestamp, ...data });
+  }
+
+  static createErrorEmbed({
+    title = 'Error',
+    description = 'An error occured and the command failed.',
+    ...data
+  }: MessageEmbedOptions = {}): MessageEmbed {
+    return this.createEmbed({ title, description, ...data });
   }
 }

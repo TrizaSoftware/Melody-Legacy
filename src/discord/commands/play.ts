@@ -3,6 +3,7 @@ import { GuildMember } from 'discord.js';
 import Command, { CommandCategory } from './Command';
 import { joinVoiceChannel } from '@discordjs/voice';
 import VoiceConnectionManager from '../util/VoiceConnectionManager';
+import CommandError from '../util/CommandError';
 
 const helpCommand = new Command({
   name: 'play',
@@ -14,8 +15,9 @@ const helpCommand = new Command({
   execute: async (interaction, args) => {
     if (!interaction.inGuild()) return;
     const member = interaction.member as GuildMember;
-    if (!member.voice.channel) throw new Error('You must be in a Voice Channel to run this command.');
-    if (!args[0]) throw new Error('You must specify a search term!');
+    if (!member.voice.channel)
+      throw new CommandError('You must be in a Voice Channel to run this command.');
+    if (!args[0]) throw new CommandError('You must specify a search term!');
     joinVoiceChannel({
       channelId: member.voice.channel.id,
       guildId: interaction.guildId,
