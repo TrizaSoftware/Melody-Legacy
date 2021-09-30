@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node .",
     "build": "eslint src && tsc",
-    "dev": "nodemon --ext ts,json --watch src/** -r dotenv-flow/config ./src/index.ts",
+    "dev": "nodemon --ext ts,json --watch src/** --exec \"npx ts-node\" -r dotenv-flow/config ./src/index.ts",
     "lint": "eslint src && prettier --check src",
     "lint:fix": "eslint --fix src && prettier --write src"
   },
@@ -36,6 +36,7 @@
   },
   "devDependencies": {
     "@discordjs/builders": "^0.6.0",
+    "@types/express": "^4.17.13",
     "@types/node": "^16.10.2",
     "@typescript-eslint/eslint-plugin": "^4.32.0",
     "@typescript-eslint/parser": "^4.32.0",
