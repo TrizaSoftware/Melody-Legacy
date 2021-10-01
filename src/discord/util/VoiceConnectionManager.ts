@@ -21,18 +21,25 @@ class VoiceConnectionManager extends EventEmitter {
   static readonly Events = Events;
 
   private static managers: VoiceConnectionManager[] = [];
-  static getVCManager(channelId: Snowflake): VoiceConnectionManager | undefined {
-    return this.managers.find((manager) => manager.channelId == channelId);
+  static getVCManager(guildId: Snowflake): VoiceConnectionManager | undefined {
+    return this.managers.find((manager) => manager.guildId == guildId);
   }
 
+  readonly guildId: Snowflake;
   private _channelId: Snowflake;
   get channelId(): Snowflake {
     return this._channelId;
   }
 
-  constructor(channelId: Snowflake) {
+  constructor(guildId: Snowflake, channelId: Snowflake) {
     super();
+    this.guildId = guildId;
     this._channelId = channelId;
+
+    const manager = VoiceConnectionManager.getVCManager(guildId);
+    if (manager) return manager;
+    VoiceConnectionManager.managers.push(this);
+
     this.emit(VoiceConnectionManager.Events.Data, 'Test');
   }
 }

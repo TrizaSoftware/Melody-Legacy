@@ -20,13 +20,14 @@ const helpCommand = new Command({
     const member = interaction.member as GuildMember;
     if (!member.voice.channel) throw new CommandError('You must be in a Voice Channel to run this command.');
     if (!args[0]) throw new CommandError('You must specify a search term!');
-    joinVoiceChannel({
-      channelId: member.voice.channel.id,
-      guildId: interaction.guildId,
-      adapterCreator: member.voice.channel.guild.voiceAdapterCreator,
-    });
-    const vcm = new VoiceConnectionManager(member.voice.channel.id);
-    vcm.on(VoiceConnectionManager.Events.Data, (data) => console.log(data));
+    if (!VoiceConnectionManager.getVCManager(interaction.guildId)) {
+      joinVoiceChannel({
+        channelId: member.voice.channel.id,
+        guildId: interaction.guildId,
+        adapterCreator: member.voice.channel.guild.voiceAdapterCreator,
+      });
+      new VoiceConnectionManager(interaction.guildId, member.voice.channel.id);
+    }
   },
 });
 
