@@ -26,13 +26,10 @@ module.exports = class Command extends commandBase{
             query = args[0].value
           }
          voice.joinVoiceChannel({channelId: message.member.voice.channel.id, guildId: message.guild.id, adapterCreator: message.member.voice.channel.guild.voiceAdapterCreator})
-         new voiceConnectionManager(message.member.voice.channel.id).eventEmitter.on("dataSend", (data) => {
-           console.log(data)
+         let vcm = new VoiceConnectionManager(message.guild.id, message.member.voice.channel.id)
+         vcm.eventEmitter.on("test", (data)=> {
+           console.log("test")
          })
         }
-        let vcm = new VoiceConnectionManager(message.member.voice.channel.id)
-        vcm.eventEmitter.on("test", (data)=> {
-          console.log("test")
-        })
     }
 }
