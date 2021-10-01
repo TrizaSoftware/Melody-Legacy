@@ -1,3 +1,6 @@
+// Copyright (c) 2020-2021 T:Riza Corporation. All rights reserved.
+// The full license is available in the LICENSE file at the root of this project.
+
 import express from 'express';
 
 export default class Server {

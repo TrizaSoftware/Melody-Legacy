@@ -1,3 +1,6 @@
+// Copyright (c) 2020-2021 T:Riza Corporation. All rights reserved.
+// The full license is available in the LICENSE file at the root of this project.
+
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { GuildMember } from 'discord.js';
 import Command, { CommandCategory } from './Command';
@@ -15,8 +18,7 @@ const helpCommand = new Command({
   execute: async (interaction, args) => {
     if (!interaction.inGuild()) return;
     const member = interaction.member as GuildMember;
-    if (!member.voice.channel)
-      throw new CommandError('You must be in a Voice Channel to run this command.');
+    if (!member.voice.channel) throw new CommandError('You must be in a Voice Channel to run this command.');
     if (!args[0]) throw new CommandError('You must specify a search term!');
     joinVoiceChannel({
       channelId: member.voice.channel.id,

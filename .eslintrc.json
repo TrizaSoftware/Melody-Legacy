@@ -18,5 +18,8 @@
     ],
     "rules": {
     },
-    "root": true
+    "root": true,
+    "ignorePatterns": [
+        "*.js"
+    ]
 }
