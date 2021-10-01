@@ -1,6 +1,6 @@
 const commandBase = require("../utils/commandBase")
 const embedBase = require("../utils/embedBase")
-const {VoiceConnectionManager} = require("../utils/voiceConnectionManager")
+const {VoiceConnectionManager, getVCManager} = require("../utils/voiceConnectionManager")
 const voice = require("@discordjs/voice")
 
 
@@ -25,11 +25,10 @@ module.exports = class Command extends commandBase{
           }else{
             query = args[0].value
           }
-         voice.joinVoiceChannel({channelId: message.member.voice.channel.id, guildId: message.guild.id, adapterCreator: message.member.voice.channel.guild.voiceAdapterCreator})
-         let vcm = new VoiceConnectionManager(message.guild.id, message.member.voice.channel.id)
-         vcm.eventEmitter.on("test", (data)=> {
-           console.log("test")
-         })
+         if(!getVCManager(message.guild.id)){
+          let vcm = new VoiceConnectionManager(message.guild.id, message.member.voice.channel.id)
+          voice.joinVoiceChannel({channelId: message.member.voice.channel.id, guildId: message.guild.id, adapterCreator: message.member.voice.channel.guild.voiceAdapterCreator})
+         }
         }
     }
 }
