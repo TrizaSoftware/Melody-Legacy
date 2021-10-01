@@ -1,0 +1,2 @@
+# TypeScript Rewrite
+[Jimmy](https://github.com/CodedJimmy) [writes code](https://github.com/TrizaCorporation/melody/commits?author=CodedJimmy). It's in JavaScript. Here, it is rewritten it in TypeScript. Because TypeScript is better.
