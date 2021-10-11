@@ -47,7 +47,12 @@ module.exports = class Command extends commandBase{
                 let selectedoption = datatoindex[parseInt(data.first().content) - 1]
                 let vcm = getVCManager(message.guild.id)
                 if(getVCManager(message.guild.id)){
-                  vcm.playSong(selectedoption.url)
+                  vcm.playSong(selectedoption)
+                  vcm.eventEmitter.on("songData", (type, data) => {
+                    if (type == "playing"){
+                      message.channel.send({embeds: [new embedBase("Now Playing",  `Now Playing [${data.name}](${data.url})!`)]})
+                    }
+                  })
                 }
               }else{
                  message.channel.send({embeds: [new embedBase("Prompt Terminated", `${data.first().content} isn't a valid option.`)]})

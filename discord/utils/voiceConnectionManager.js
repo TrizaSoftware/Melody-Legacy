@@ -18,20 +18,23 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager{
       this.connection = getVoiceConnection(guildid)
       this.eventEmitter = EventEmitter
       this.currentChannelId = channelid
+      this.playingSong = false
       this.queue = []
       this.audioPlayer = createAudioPlayer()
-      this.playSong = async function(url){
-        let stream = ytdl(url, {
+      this.playSong = async function(data){
+        let stream = ytdl(data.url, {
           filter: "audioonly",
           highWaterMark: 1 << 25,
         })
        let resource = createAudioResource(stream, {inputType: StreamType.Arbitrary})
        this.audioPlayer.play(resource)
        await entersState(this.audioPlayer, AudioPlayerStatus.Playing, 5_000).then(() => {
+         this.eventEmitter.emit("songData", "playing", data)
          this.connection.subscribe(this.audioPlayer)
+         this.playingSong = true
        })
       }
-      this.addToQueue = function(url){
+      this.addToQueue = function(data){
         
       }
       this.terminateManager = function(){
