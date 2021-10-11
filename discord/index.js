@@ -1,6 +1,7 @@
 const {Client, Intents, Collection, MessageEmbed} = require("discord.js")
 const {REST} = require("@discordjs/rest")
 const {Routes} = require("discord-api-types/v9")
+const embedBase = require("./utils/embedBase") 
 const fs = require("fs")
 const botIntents = new Intents()
 botIntents.add(Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_INTEGRATIONS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES)
@@ -101,13 +102,7 @@ botClient.on("messageCreate", (message) => {
     if(!cmdfile){
       for (let cmd of botClient.commands){
         if(command == cmd[1].name.substr(0,command.length)){
-          let embed = new MessageEmbed()
-          .setTitle("Autocomplete")
-          .setDescription(`Did you mean **${process.env.PREFIX}${cmd[1].name}**?`)
-          .setColor("#800000")
-          .setFooter("© The T:Riza Corporation")
-          .setTimestamp()
-          message.channel.send({embeds:[embed]})
+          message.channel.send({embeds:[new embedBase("Autocomplete", `Did you mean **${process.env.PREFIX}${cmd[1].name}**?`)]})
         }
       }
     }else{
