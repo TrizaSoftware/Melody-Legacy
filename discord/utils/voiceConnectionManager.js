@@ -1,3 +1,5 @@
+const {getVoiceConnection, VoiceConnectionStatus, entersState, AudioPlayerStatus, createAudioPlayer, createAudioResource, StreamType} = require("@discordjs/voice")
+const ytdl = require("ytdl-core")
 const voiceConnectionManagers = {}
 const events = require("events")
 
@@ -6,9 +8,53 @@ module.exports.getVCManager = function(guildid){
 }
 
 module.exports.VoiceConnectionManager = class VoiceConnectionManager{
-    constructor(guildid,channelid){
-        const EventEmitter = new events.EventEmitter()
-        this.eventEmitter = EventEmitter
-        this.currentChannelId = guildid
+    constructor(guildid, channelid){
+      if(!guildid || !channelid){
+        throw new Error("INVALID_FIELDS")
+        return;
+      }
+      console.log(`[VoiceManager] Connection Manager Created for Guild ${guildid}`)
+      const EventEmitter = new events.EventEmitter()
+      this.connection = getVoiceConnection(guildid)
+      this.eventEmitter = EventEmitter
+      this.currentChannelId = channelid
+      this.playingSong = false
+      this.queue = []
+      this.audioPlayer = createAudioPlayer()
+      this.playSong = async function(data){
+        let stream = ytdl(data.url, {
+          filter: "audioonly",
+          highWaterMark: 1 << 25,
+        })
+       let resource = createAudioResource(stream, {inputType: StreamType.Arbitrary})
+       this.audioPlayer.play(resource)
+       await entersState(this.audioPlayer, AudioPlayerStatus.Playing, 5_000).then(() => {
+         this.eventEmitter.emit("songData", "playing", data)
+         this.connection.subscribe(this.audioPlayer)
+         this.playingSong = true
+       })
+      }
+      this.addToQueue = function(data){
+        
+      }
+      this.terminateManager = function(){
+        console.log(`[VoiceManager] Connection Terminated for Guild ${guildid}`)
+        voiceConnectionManagers[guildid] = undefined
+        this.connection.destroy()
+      }
+      this.connection.on(VoiceConnectionStatus.Disconnected, async (oldState, newState) =>{
+        try{
+          await Promise.race([
+            entersState(this.connection, VoiceConnectionStatus.Signalling, 5_000),
+            entersState(this.connection, VoiceConnectionStatus.Connecting, 5_000),
+          ]).then((response) =>{
+            this.channelid = response.joinConfig.channelId
+            console.log(`[VoiceManager] Moved to channel ${this.channelid}`)
+          })
+        }catch(error){
+          this.terminateManager()
+        }
+      })
+      voiceConnectionManagers[guildid] = this
     }
 }

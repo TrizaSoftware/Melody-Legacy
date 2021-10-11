@@ -1,6 +1,7 @@
-const {Client, Intents, Collection} = require("discord.js")
+const {Client, Intents, Collection, MessageEmbed} = require("discord.js")
 const {REST} = require("@discordjs/rest")
 const {Routes} = require("discord-api-types/v9")
+const embedBase = require("./utils/embedBase") 
 const fs = require("fs")
 const botIntents = new Intents()
 botIntents.add(Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_INTEGRATIONS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES)
@@ -98,11 +99,19 @@ botClient.on("messageCreate", (message) => {
     const command = data[0]
     const args = data.slice(1)
     const cmdfile = botClient.commands.get(command) || botClient.commands.get(botClient.aliases.get(command))
-    cmdfile.execute("chat", message, args)
+    if(!cmdfile){
+      for (let cmd of botClient.commands){
+        if(command == cmd[1].name.substr(0,command.length)){
+          message.channel.send({embeds:[new embedBase("Autocomplete", `Did you mean **${process.env.PREFIX}${cmd[1].name}**?`)]})
+        }
+      }
+    }else{
+        cmdfile.execute("chat", message, args)
+    }
 })
 
 
 
 botClient.login(process.env.TOKEN)
 
-module.exports.bot = botClient
+module.exports.Bot = botClient

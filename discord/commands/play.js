@@ -2,6 +2,9 @@ const commandBase = require("../utils/commandBase")
 const embedBase = require("../utils/embedBase")
 const {VoiceConnectionManager, getVCManager} = require("../utils/voiceConnectionManager")
 const voice = require("@discordjs/voice")
+const fetch = require("node-fetch")
+const yt = require("youtube-search-without-api-key")
+
 
 
 module.exports = class Command extends commandBase{
@@ -25,10 +28,44 @@ module.exports = class Command extends commandBase{
           }else{
             query = args[0].value
           }
-         if(!getVCManager(message.guild.id)){
-          let vcm = new VoiceConnectionManager(message.guild.id, message.member.voice.channel.id)
-          voice.joinVoiceChannel({channelId: message.member.voice.channel.id, guildId: message.guild.id, adapterCreator: message.member.voice.channel.guild.voiceAdapterCreator})
-         }
+          let data = await yt.search(query)
+          let fields = []
+          let datatoindex = []
+          for (let i = 0; i < 5; i++){
+            let actualNumber = i + 1
+            fields[i] = {name: `${actualNumber.toString()}.`, value: data[i].title, inline: false}
+            datatoindex[i] = {name: data[i].title, url: data[i].url}
+          }
+          let embed = new embedBase("Pick a Song", "Please pick a song.", fields, "Type Cancel to Cancel | Prompt cancels in 1 minute")
+          message.reply({embeds: [embed]})
+          let filter = m => m.author.id == message.member.id
+          message.channel.awaitMessages({filter, max: 1, time: 60000, errors:["time"]}).then(data => {
+            if(data.first().content.toLowerCase() == "cancel"){
+              message.channel.send({embeds: [new embedBase("Prompt Cancelled", "The prompt has been successfully cancelled.")]})
+            }else{
+              if(datatoindex[parseInt(data.first().content) - 1]){
+                let selectedoption = datatoindex[parseInt(data.first().content) - 1]
+                let vcm = getVCManager(message.guild.id)
+                if(getVCManager(message.guild.id)){
+                  vcm.playSong(selectedoption)
+                  vcm.eventEmitter.on("songData", (type, data) => {
+                    if (type == "playing"){
+                      message.channel.send({embeds: [new embedBase("Now Playing",  `Now Playing [${data.name}](${data.url})!`)]})
+                    }
+                  })
+                }
+              }else{
+                 message.channel.send({embeds: [new embedBase("Prompt Terminated", `${data.first().content} isn't a valid option.`)]})
+              }
+            }
+          }).catch((err) => {
+            console.log(err)
+            message.channel.send({embeds: [new embedBase("Prompt Terminated", "The prompt ran out of time and has been terminated.")]})
+          })
+          if(!getVCManager(message.guild.id)){
+            voice.joinVoiceChannel({channelId: message.member.voice.channel.id, guildId: message.guild.id, adapterCreator: message.member.voice.channel.guild.voiceAdapterCreator})
+            let vcm = new VoiceConnectionManager(message.guild.id, message.member.voice.channel.id)
+          }
         }
     }
 }

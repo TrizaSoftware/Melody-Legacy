@@ -16,7 +16,7 @@ module.exports = class embed{
             if(!footer){
                 embed.setFooter(`© T:Riza Corp 2020 - ${new Date().getFullYear()}`)
             }else{
-                embed.setFooter(footer)
+                embed.setFooter(`${footer} | © T:Riza Corp 2020 - ${new Date().getFullYear()}`)
             }
             return embed
         }

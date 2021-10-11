@@ -5,4 +5,4 @@ app.use((req, res) => {
   res.status(200).json({message: "OK"})
 });
 
-app.listen(8080)
+app.listen(3000)
