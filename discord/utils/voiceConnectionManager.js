@@ -17,6 +17,7 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager{
       const EventEmitter = new events.EventEmitter()
       this.connection = getVoiceConnection(guildid)
       this.eventEmitter = EventEmitter
+      this.eventEmitter._maxListeners = 1
       this.currentChannelId = channelid
       this.playingSong = false
       this.queue = []
@@ -26,16 +27,36 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager{
           filter: "audioonly",
           highWaterMark: 1 << 25,
         })
+      try{
        let resource = createAudioResource(stream, {inputType: StreamType.Arbitrary})
        this.audioPlayer.play(resource)
        await entersState(this.audioPlayer, AudioPlayerStatus.Playing, 5_000).then(() => {
          this.eventEmitter.emit("songData", "playing", data)
          this.connection.subscribe(this.audioPlayer)
          this.playingSong = true
+         this.audioPlayer.on(AudioPlayerStatus.Idle, () => {
+           this.playingSong = false
+           this.eventEmitter.emit("songData", "end")
+           this.queue.shift()
+           if (this.queue.length > 0){
+             this.playSong(this.queue[0])
+           }else{
+             this.eventEmitter.emit("songData", "queueEnd")
+           }
+         })
        })
+      }catch(err){
+        this.eventEmitter.emit("songData", "error")
+      }
       }
       this.addToQueue = function(data){
-        
+        this.queue[this.queue.length] = data
+        console.log(this.queue)
+        if (this.queue.length == 1){
+          this.playSong(this.queue[0])
+        }else{
+          return "addedToQueue"
+        }
       }
       this.terminateManager = function(){
         console.log(`[VoiceManager] Connection Terminated for Guild ${guildid}`)
@@ -48,8 +69,8 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager{
             entersState(this.connection, VoiceConnectionStatus.Signalling, 5_000),
             entersState(this.connection, VoiceConnectionStatus.Connecting, 5_000),
           ]).then((response) =>{
-            this.channelid = response.joinConfig.channelId
-            console.log(`[VoiceManager] Moved to channel ${this.channelid}`)
+            this.currentChannelId = response.joinConfig.channelId
+            console.log(`[VoiceManager] Moved to channel ${this.currentChannelId}`)
           })
         }catch(error){
           this.terminateManager()
