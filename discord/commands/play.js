@@ -33,8 +33,10 @@ module.exports = class Command extends commandBase{
           let datatoindex = []
           for (let i = 0; i < 5; i++){
             let actualNumber = i + 1
-            fields[i] = {name: `${actualNumber.toString()}.`, value: data[i].title, inline: false}
-            datatoindex[i] = {name: data[i].title, url: data[i].url}
+            if(data[i]){
+              fields[i] = {name: `${actualNumber.toString()}.`, value: data[i].title, inline: false}
+              datatoindex[i] = {name: data[i].title, url: data[i].url}
+            }
           }
           let embed = new embedBase("Pick a Song", "Please pick a song.", fields, "Type Cancel to Cancel | Prompt cancels in 1 minute")
           message.reply({embeds: [embed]})
@@ -47,12 +49,27 @@ module.exports = class Command extends commandBase{
                 let selectedoption = datatoindex[parseInt(data.first().content) - 1]
                 let vcm = getVCManager(message.guild.id)
                 if(getVCManager(message.guild.id)){
-                  vcm.playSong(selectedoption)
-                  vcm.eventEmitter.on("songData", (type, data) => {
-                    if (type == "playing"){
-                      message.channel.send({embeds: [new embedBase("Now Playing",  `Now Playing [${data.name}](${data.url})!`)]})
-                    }
-                  })
+                  let response = vcm.addToQueue(selectedoption)
+                  if (response == "addedToQueue"){
+                    message.channel.send({embeds: [new embedBase("Added To Queue", `Added [${selectedoption.name}](${selectedoption.url}) to the queue!`)]})
+                  }
+                  if(vcm.eventEmitter._eventsCount == 0){
+                    vcm.eventEmitter.on("songData", (type, data) => {
+                      if (type == "playing"){
+                        message.channel.send({embeds: [new embedBase("Now Playing",  `Now Playing: [${data.name}](${data.url})`)]})
+                      }else if(type == "end"){
+                        message.channel.send({embeds: [new embedBase("Song Ended",  `The Song Has Ended.`)]})
+                      }else if(type == "queueEnd"){
+                        message.channel.send({embeds: [new embedBase("Queue Ended",  `The Queue Has Ended.`)]})
+                        vcm.eventEmitter.removeAllListeners(["songData"])
+                        vcm.terminateManager()
+                      }else if(type == "error"){
+                        message.channel.send({embeds: [new embedBase("Error",  `An error has occurred.`)]})
+                        vcm.eventEmitter.removeAllListeners(["songData"])
+                        vcm.terminateManager()
+                      }
+                    })
+                  }
                 }
               }else{
                  message.channel.send({embeds: [new embedBase("Prompt Terminated", `${data.first().content} isn't a valid option.`)]})
@@ -63,8 +80,10 @@ module.exports = class Command extends commandBase{
             message.channel.send({embeds: [new embedBase("Prompt Terminated", "The prompt ran out of time and has been terminated.")]})
           })
           if(!getVCManager(message.guild.id)){
+            await voice.joinVoiceChannel({channelId: message.member.voice.channel.id, guildId: message.guild.id, adapterCreator: message.member.voice.channel.guild.voiceAdapterCreator})
+            new VoiceConnectionManager(message.guild.id,message.member.voice.channel.id)
+          }else if(getVCManager(message.guild.id).currentChannelId !== message.member.voice.channel.id){
             voice.joinVoiceChannel({channelId: message.member.voice.channel.id, guildId: message.guild.id, adapterCreator: message.member.voice.channel.guild.voiceAdapterCreator})
-            let vcm = new VoiceConnectionManager(message.guild.id, message.member.voice.channel.id)
           }
         }
     }

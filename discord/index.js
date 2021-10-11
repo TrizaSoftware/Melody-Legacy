@@ -1,4 +1,5 @@
 const {Client, Intents, Collection, MessageEmbed} = require("discord.js")
+const didYouMean = require("./utils/didYouMean")
 const {REST} = require("@discordjs/rest")
 const {Routes} = require("discord-api-types/v9")
 const embedBase = require("./utils/embedBase") 
@@ -100,13 +101,16 @@ botClient.on("messageCreate", (message) => {
     const args = data.slice(1)
     const cmdfile = botClient.commands.get(command) || botClient.commands.get(botClient.aliases.get(command))
     if(!cmdfile){
+    let cmdnames = []
       for (let cmd of botClient.commands){
-        if(command == cmd[1].name.substr(0,command.length)){
-          message.channel.send({embeds:[new embedBase("Autocomplete", `Did you mean **${process.env.PREFIX}${cmd[1].name}**?`)]})
-        }
+        cmdnames.push(cmd[1].name)
+      }
+      let result = didYouMean(command, cmdnames)
+      if(result.result){
+          message.channel.send({embeds: [new embedBase("Autocomplete", `Did you mean **${process.env.PREFIX}${result.result}**?`)]})
       }
     }else{
-        cmdfile.execute("chat", message, args)
+      cmdfile.execute("chat", message, args)
     }
 })
 
