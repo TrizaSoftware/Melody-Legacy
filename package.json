@@ -26,8 +26,8 @@
     "node-fetch": "^2.6.2",
     "nodemon": "^2.0.13",
     "opusscript": "^0.0.8",
-    "sodium": "^3.0.2",
     "soundcloud-downloader": "^1.0.0",
+    "tweetnacl": "^1.0.3",
     "youtube-search-without-api-key": "^1.0.6",
     "ytdl-core": "^4.9.1"
   },
