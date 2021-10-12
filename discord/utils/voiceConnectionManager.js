@@ -20,35 +20,31 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager{
       this.eventEmitter._maxListeners = 1
       this.currentChannelId = channelid
       this.playingSong = false
+      this.shouldLoop = false
       this.queue = []
+      this.currentSong = undefined
       this.audioPlayer = createAudioPlayer()
       this.playSong = async function(data){
         let stream = ytdl(data.url, {
           filter: "audioonly",
           highWaterMark: 1 << 25,
         })
+        
       try{
        let resource = createAudioResource(stream, {inputType: StreamType.Arbitrary})
-       this.audioPlayer.play(resource)
+        this.audioPlayer.play(resource)
        await entersState(this.audioPlayer, AudioPlayerStatus.Playing, 5_000).then(() => {
          this.eventEmitter.emit("songData", "playing", data)
+         this.currentSong = data
          this.connection.subscribe(this.audioPlayer)
          this.playingSong = true
-         this.audioPlayer.on(AudioPlayerStatus.Idle, () => {
-           this.playingSong = false
-           this.eventEmitter.emit("songData", "end")
-           this.queue.shift()
-           if (this.queue.length > 0){
-             this.playSong(this.queue[0])
-           }else{
-             this.eventEmitter.emit("songData", "queueEnd")
-           }
-         })
        })
       }catch(err){
-        this.eventEmitter.emit("songData", "error")
+        console.log(err)
+        this.eventEmitter.emit("songData", "error", err)
       }
       }
+
       this.addToQueue = function(data){
         this.queue[this.queue.length] = data
         console.log(this.queue)
@@ -71,11 +67,27 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager{
           ]).then((response) =>{
             this.currentChannelId = response.joinConfig.channelId
             console.log(`[VoiceManager] Moved to channel ${this.currentChannelId}`)
+            this.shouldLoop = false
           })
         }catch(error){
           this.terminateManager()
         }
       })
+
+      this.audioPlayer.on(AudioPlayerStatus.Idle, () => {
+           this.playingSong = false
+           this.eventEmitter.emit("songData", "end")
+           this.queue.shift()
+           if (this.shouldLoop){
+             this.queue.push(this.currentSong)
+           }
+           if (this.queue.length > 0){
+             this.playSong(this.queue[0])
+           }else{
+             this.eventEmitter.emit("songData", "queueEnd")
+           }
+       })
+
       voiceConnectionManagers[guildid] = this
     }
 }

@@ -6,11 +6,13 @@ module.exports = class embed{
         }else{
             const embed = new MessageEmbed()
             .setTitle(title)
-            .setDescription(description)
             .setColor("#369457")
+            if(description){
+            embed.setDescription(description)
+            }
             if(fields){
                 for(let field of fields){
-                    embed.addField(field.name, field.value, field.inline)
+                    embed.addField(field.name, field.value, field.inline || false)
                 }
             }
             if(!footer){
