@@ -4,7 +4,7 @@ const embedBase = require("../utils/embedBase")
 
 module.exports = class Command extends commandBase{
     constructor(){
-        super("skip", "Song", ["s"], "Skips the song.", true)
+        super("skip", "Music", ["s"], "Skips the song.", true)
     }
     async execute(type, message, args){
         if(type == "interaction"){
@@ -13,8 +13,10 @@ module.exports = class Command extends commandBase{
             message.member = member
           }
         if(getVCManager(message.guild.id) && getVCManager(message.guild.id).currentChannelId == message.member.voice.channel.id && getVCManager(message.guild.id).queue[0] !== undefined){
+            let vcm = getVCManager(message.guild.id)
             message.reply({embeds: [new embedBase("Skipped", "Successfully skipped the song.")]})
-            getVCManager(message.guild.id).audioPlayer.stop()
+            vcm.shouldLoop = false
+            vcm.audioPlayer.stop()
         }else{
             message.reply({embeds: [new embedBase("Error", "You can't do that right now.")]})
         }

@@ -15,6 +15,10 @@ botClient.aliases = new Collection()
 
 const cmdFiles = fs.readdirSync("discord/commands").filter((file) => (file.endsWith(".js")))
 
+process.on('unhandledRejection', error => {
+	console.log('Unhandled promise rejection:', error);
+});
+
 cmdFiles.forEach((file) => {
     const module = require(`./commands/${file}`)
     const command = new module()
@@ -59,7 +63,7 @@ botClient.on("interactionCreate", (interaction) => {
 
 
 botClient.on("ready", () => {
-    const statuses = [["WATCHING", "The T:Riza Corporation"], ["PLAYING", "Some good tunes!"], ["PLAYING", "The legend that was on the cord!"], ["PLAYING", `${process.env.PREFIX}help | ${process.env.PREFIX}info`], ["WATCHING", "Jimmy!"]]
+    const statuses = [["WATCHING", "The T:Riza Corporation"], ["PLAYING", "Some good tunes!"], ["PLAYING", "The legend that was on the cord!"], ["PLAYING", `${process.env.PREFIX}help | ${process.env.PREFIX}info`], ["WATCHING", "Jimmy!"], ["WATCHING", `${botClient.guilds.cache.size} servers!`]]
     for (let guild of botClient.guilds.cache){
         handleGuild(guild[1].id)
     }

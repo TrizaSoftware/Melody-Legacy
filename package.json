@@ -29,7 +29,7 @@
     "opusscript": "^0.0.8",
     "soundcloud-downloader": "^1.0.0",
     "tweetnacl": "^1.0.3",
-    "youtube-search-without-api-key": "^1.0.6",
+    "usetube": "^2.1.4",
     "ytdl-core": "^4.9.1"
   },
   "devDependencies": {
