@@ -50,8 +50,6 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager{
         console.log(this.queue)
         if (this.queue.length == 1){
           this.playSong(this.queue[0])
-        }else{
-          return "addedToQueue"
         }
       }
       this.terminateManager = function(){

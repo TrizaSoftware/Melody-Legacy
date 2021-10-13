@@ -86,7 +86,7 @@ module.exports = class Command extends commandBase{
              let selectedoption = datatoindex[parseInt(i.customId) - 1]
              let vcm = getVCManager(message.guild.id)
              if(getVCManager(message.guild.id)){
-               let response = vcm.addToQueue(selectedoption)
+               vcm.addToQueue(selectedoption)
                setTimeout(function(){
                   i.editReply({embeds: [new embedBase("Added To Queue", `Added [${selectedoption.name}](${selectedoption.url}) to the queue!`)]})
                 }, 1000)
