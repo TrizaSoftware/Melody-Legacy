@@ -87,15 +87,13 @@ module.exports = class Command extends commandBase{
              let vcm = getVCManager(message.guild.id)
              if(getVCManager(message.guild.id)){
                let response = vcm.addToQueue(selectedoption)
-               if (response == "addedToQueue"){
-                 setTimeout(function(){
+               setTimeout(function(){
                   i.editReply({embeds: [new embedBase("Added To Queue", `Added [${selectedoption.name}](${selectedoption.url}) to the queue!`)]})
-                 }, 1000)
-               }
+                }, 1000)
                if(vcm.eventEmitter._eventsCount == 0){
                  vcm.eventEmitter.on("songData", (type, data) => {
                    if (type == "playing"){
-                     i.editReply({embeds: [new embedBase("Now Playing",  `Now Playing: [${data.name}](${data.url})`)]})
+                     message.channel.send({embeds: [new embedBase("Now Playing",  `Now Playing: [${data.name}](${data.url})`)]})
                    }else if(type == "end"){
                      message.channel.send({embeds: [new embedBase("Song Ended",  `The Song Has Ended.`)]})
                    }else if(type == "queueEnd"){
@@ -112,6 +110,11 @@ module.exports = class Command extends commandBase{
              }
            }).catch(err =>{
              message.channel.send({embeds: [new embedBase("Prompt Terminated", "The prompt ran out of time and has been terminated.")]})
+            if (type == "interaction"){
+              message.editReply({embeds: [embed], components: []})
+            }else{
+              message.edit({embeds: [embed], components: []})
+            }
            })
            //Old Code For Handling Songs
            /*
