@@ -1,5 +1,6 @@
 const commandBase = require("../utils/commandBase")
 const embedBase = require("../utils/embedBase")
+const componentBase = require("../utils/componentBase")
 const {VoiceConnectionManager, getVCManager} = require("../utils/voiceConnectionManager")
 const voice = require("@discordjs/voice")
 const fetch = require("node-fetch")
@@ -40,12 +41,14 @@ module.exports = class Command extends commandBase{
           let data = await usetube.searchVideo(query)
           let fields = []
           let datatoindex = []
+          let componentData = []
           if (data && data.videos[0]){
              for (let i = 0; i < 5; i++){
               let actualNumber = i + 1
               if(data.videos[i]){
                 fields[i] = {name: `${actualNumber.toString()}.`, value: data.videos[i].title, inline: false}
                 datatoindex[i] = {name: data.videos[i].title, url: `https://youtube.com/watch?v=${data.videos[i].id}`}
+                componentData[i] = {style: "SUCCESS", text: actualNumber.toString()}
               }
             }
           }else{
@@ -56,14 +59,70 @@ module.exports = class Command extends commandBase{
             }
             return
           }
-          let embed = new embedBase("Pick a Song", "Please pick a song.", fields, "Type Cancel to Cancel | Prompt cancels in 1 minute")
-         if(type == "interaction"){
-             message.editReply({embeds: [embed]})
+          let embed = new embedBase("Pick a Song", "Please pick a song.", fields, "Type \"Cancel\" to Cancel | Prompt cancels in 1 minute")
+          let components = new componentBase("button", componentData)
+          if(type == "interaction"){
+             message.editReply({embeds: [embed], components: [components]})
           }else{
-              message.reply({embeds: [embed]})
+              message.reply({embeds: [embed], components: [components]})
               message.reactions.removeAll()
 	            .catch(error => console.log('Failed to clear reactions:', error));
-           }
+          }
+           let interactionFilter = i => {return i.user.id == message.member.id}
+           message.channel.awaitMessageComponent({interactionFilter, max: 1, componentType: "BUTTON", time: 60000}).then(i => {
+             if (type == "interaction"){
+               message.editReply({embeds: [embed], components: []})
+             }else{
+               message.edit({embeds: [embed], components: []})
+             }
+             i.deferReply()
+             let selectedoption = datatoindex[parseInt(i.customId) - 1]
+             console.log(selectedoption)
+             let vcm = getVCManager(message.guild.id)
+             if(getVCManager(message.guild.id)){
+               let response = vcm.addToQueue(selectedoption)
+               if (response == "addedToQueue"){
+                 setTimeout(function(){
+                  i.editReply({embeds: [new embedBase("Added To Queue", `Added [${selectedoption.name}](${selectedoption.url}) to the queue!`)]})
+                 }, 1000)
+               }
+               if(vcm.eventEmitter._eventsCount == 0){
+                 vcm.eventEmitter.on("songData", (type, data) => {
+                   if (type == "playing"){
+                     i.editReply({embeds: [new embedBase("Now Playing",  `Now Playing: [${data.name}](${data.url})`)]})
+                   }else if(type == "end"){
+                     message.channel.send({embeds: [new embedBase("Song Ended",  `The Song Has Ended.`)]})
+                   }else if(type == "queueEnd"){
+                     message.channel.send({embeds: [new embedBase("Queue Ended",  `The Queue Has Ended.`)]})
+                     vcm.eventEmitter.removeAllListeners(["songData"])
+                     vcm.terminateManager()
+                   }else if(type == "error"){
+                     message.channel.send({embeds: [new embedBase("Error",  `An error has occurred.\n\nPlease contact a developer with the following error message: \`\`\`${data}\`\`\``)]})
+                     vcm.eventEmitter.removeAllListeners(["songData"])
+                     vcm.terminateManager()
+                   }
+                 })
+               }
+             }
+           }).catch(err =>{
+             console.log(err)
+            message.channel.send({embeds: [new embedBase("Prompt Terminated", "The prompt ran out of time and has been terminated.")]})
+           })
+           let filter = m => m.author.id == message.member.id
+           message.channel.awaitMessages({filter, max: 1, time: 60000, errors:["time"]}).then(data => {
+             if(data.first().content.toLowerCase() == "cancel"){
+               message.channel.send({embeds: [new embedBase("Prompt Cancelled", "The prompt has been successfully cancelled.")]})}
+               if(type == "interaction"){
+                message.editReply({embeds: [embed], components: []})
+             }else{
+                 message.reply({embeds: [embed], components: []})
+                 message.reactions.removeAll()
+                 .catch(error => console.log('Failed to clear reactions:', error));
+             }
+              }).catch(err => {
+              })
+           //Old Code For Handling Songs
+           /*
           let filter = m => m.author.id == message.member.id
           message.channel.awaitMessages({filter, max: 1, time: 60000, errors:["time"]}).then(data => {
             if(data.first().content.toLowerCase() == "cancel"){
@@ -107,6 +166,7 @@ module.exports = class Command extends commandBase{
             console.log(err)
             message.channel.send({embeds: [new embedBase("Prompt Terminated", "The prompt ran out of time and has been terminated.")]})
           })
+          */
           if(!getVCManager(message.guild.id)){
             await voice.joinVoiceChannel({channelId: message.member.voice.channel.id, guildId: message.guild.id, adapterCreator: message.member.voice.channel.guild.voiceAdapterCreator})
             new VoiceConnectionManager(message.guild.id,message.member.voice.channel.id)
