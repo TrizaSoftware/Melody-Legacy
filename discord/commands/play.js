@@ -5,6 +5,7 @@ const {VoiceConnectionManager, getVCManager} = require("../utils/voiceConnection
 const voice = require("@discordjs/voice")
 const fetch = require("node-fetch")
 const usetube = require("usetube")
+const component = require("../utils/componentBase")
 
 
 module.exports = class Command extends commandBase{
@@ -59,12 +60,12 @@ module.exports = class Command extends commandBase{
             }
             return
           }
-          let embed = new embedBase("Pick a Song", "Please pick a song.", fields, "Type \"Cancel\" to Cancel | Prompt cancels in 1 minute")
+          let embed = new embedBase("Pick a Song", "Please pick a song.", fields, "Prompt cancels in 1 minute")
           let components = new componentBase("button", componentData)
           if(type == "interaction"){
-             message.editReply({embeds: [embed], components: [components]})
+             message.editReply({embeds: [embed], components: [components, new componentBase("button", [{text: "Cancel", style: "DANGER"}])]})
           }else{
-              message.reply({embeds: [embed], components: [components]})
+              message.reply({embeds: [embed], components: [components, new componentBase("button", [{text: "Cancel", style: "DANGER"}])]})
               message.reactions.removeAll()
 	            .catch(error => console.log('Failed to clear reactions:', error));
           }
@@ -76,8 +77,13 @@ module.exports = class Command extends commandBase{
                message.edit({embeds: [embed], components: []})
              }
              i.deferReply()
+             if(i.customId == "Cancel"){
+              setTimeout(function(){
+               i.editReply({embeds: [new embedBase("Prompt Cancelled", "The prompt has been successfully cancelled.")]})
+              }, 1000)
+               return;
+             }
              let selectedoption = datatoindex[parseInt(i.customId) - 1]
-             console.log(selectedoption)
              let vcm = getVCManager(message.guild.id)
              if(getVCManager(message.guild.id)){
                let response = vcm.addToQueue(selectedoption)
@@ -105,22 +111,8 @@ module.exports = class Command extends commandBase{
                }
              }
            }).catch(err =>{
-             console.log(err)
-            message.channel.send({embeds: [new embedBase("Prompt Terminated", "The prompt ran out of time and has been terminated.")]})
+             message.channel.send({embeds: [new embedBase("Prompt Terminated", "The prompt ran out of time and has been terminated.")]})
            })
-           let filter = m => m.author.id == message.member.id
-           message.channel.awaitMessages({filter, max: 1, time: 60000, errors:["time"]}).then(data => {
-             if(data.first().content.toLowerCase() == "cancel"){
-               message.channel.send({embeds: [new embedBase("Prompt Cancelled", "The prompt has been successfully cancelled.")]})}
-               if(type == "interaction"){
-                message.editReply({embeds: [embed], components: []})
-             }else{
-                 message.reply({embeds: [embed], components: []})
-                 message.reactions.removeAll()
-                 .catch(error => console.log('Failed to clear reactions:', error));
-             }
-              }).catch(err => {
-              })
            //Old Code For Handling Songs
            /*
           let filter = m => m.author.id == message.member.id
