@@ -22,7 +22,7 @@ module.exports = class Command extends commandBase{
                  fields[fields.length] = {name: `${i}.`, value:`[${queue[i].name}](${queue[i].url})`}
               }
             }
-          message.reply({embeds:[new embedBase("Queue", "Server Queue", fields)]})
+          message.reply({embeds:[new embedBase("Queue", undefined, fields)]})
         }
       }
     }
