@@ -104,7 +104,7 @@ module.exports = class Command extends commandBase{
                       vcm.eventEmitter.removeAllListeners(["songData"])
                       vcm.terminateManager()
                     }else if(type == "error"){
-                      message.channel.send({embeds: [new embedBase("Error",  `An error has occurred.\n\nPlease contact a developer with the following error message: \`\`\`${data}\`\`\``)]})
+                      message.channel.send({embeds: [new embedBase("Error",  `An error has occurred.${data}`)]})
                       vcm.eventEmitter.removeAllListeners(["songData"])
                       vcm.terminateManager()
                     }
