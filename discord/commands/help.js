@@ -11,9 +11,9 @@ module.exports = class Command extends commandBase{
       for (let command of Data.Bot.commands){
         let actualcmddata = command[1]
         if (!categories[actualcmddata.category]){
-          categories[actualcmddata.category] = {name: actualcmddata.category, value: `${actualcmddata.name} → ${actualcmddata.desc} | Aliases: ${actualcmddata.aliases}`}
+          categories[actualcmddata.category] = {name: actualcmddata.category, value: `${process.env.PREFIX}${actualcmddata.name} → ${actualcmddata.desc} | Aliases: ${actualcmddata.aliases}`}
         }else{
-          categories[actualcmddata.category].value += `\n${actualcmddata.name} → ${actualcmddata.desc} | Aliases: ${actualcmddata.aliases}`
+          categories[actualcmddata.category].value += `\n${process.env.PREFIX}${actualcmddata.name} → ${actualcmddata.desc} | Aliases: ${actualcmddata.aliases}`
         }
       }
       let fields = []
