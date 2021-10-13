@@ -169,12 +169,16 @@ module.exports = class Command extends commandBase{
             message.channel.send({embeds: [new embedBase("Prompt Terminated", "The prompt ran out of time and has been terminated.")]})
           })
           */
+       try{
           if(!getVCManager(message.guild.id)){
             await voice.joinVoiceChannel({channelId: message.member.voice.channel.id, guildId: message.guild.id, adapterCreator: message.member.voice.channel.guild.voiceAdapterCreator})
             new VoiceConnectionManager(message.guild.id,message.member.voice.channel.id)
           }else if(getVCManager(message.guild.id).currentChannelId !== message.member.voice.channel.id){
             voice.joinVoiceChannel({channelId: message.member.voice.channel.id, guildId: message.guild.id, adapterCreator: message.member.voice.channel.guild.voiceAdapterCreator})
           }
+        }catch(err){
+           message.channel.send({content: "An Error Has Occurred: I can't join the voice channel."})
+        }
         }
     }
 }
