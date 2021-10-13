@@ -62,10 +62,13 @@ module.exports = class Command extends commandBase{
           }
           let embed = new embedBase("Pick a Song", "Please pick a song.", fields, "Prompt cancels in 1 minute")
           let components = new componentBase("button", componentData)
+          let botMsg = undefined
           if(type == "interaction"){
              message.editReply({embeds: [embed], components: [components, new componentBase("button", [{text: "Cancel", style: "DANGER"}])]})
           }else{
-              message.reply({embeds: [embed], components: [components, new componentBase("button", [{text: "Cancel", style: "DANGER"}])]})
+            message.reply({embeds: [embed], components: [components, new componentBase("button", [{text: "Cancel", style: "DANGER"}])]}).then(msg => {
+              botMsg = msg
+            })
               message.reactions.removeAll()
 	            .catch(error => console.log('Failed to clear reactions:', error));
           }
@@ -77,7 +80,7 @@ module.exports = class Command extends commandBase{
               if (type == "interaction"){
                 message.editReply({embeds: [embed], components: []})
               }else{
-                message.edit({embeds: [embed], components: []})
+                botMsg.edit({embeds: [embed], components: []})
               }
               i.deferReply()
               if(i.customId == "Cancel"){
