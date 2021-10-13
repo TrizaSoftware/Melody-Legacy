@@ -69,47 +69,54 @@ module.exports = class Command extends commandBase{
               message.reactions.removeAll()
 	            .catch(error => console.log('Failed to clear reactions:', error));
           }
-           let interactionFilter = i => {return i.user.id == message.member.id}
-           message.channel.awaitMessageComponent({interactionFilter, max: 1, componentType: "BUTTON", time: 60000}).then(i => {
-             if (type == "interaction"){
-               message.editReply({embeds: [embed], components: []})
-             }else{
-               message.edit({embeds: [embed], components: []})
-             }
-             i.deferReply()
-             if(i.customId == "Cancel"){
-              setTimeout(function(){
-               i.editReply({embeds: [new embedBase("Prompt Cancelled", "The prompt has been successfully cancelled.")]})
-              }, 1000)
-               return;
-             }
-             let selectedoption = datatoindex[parseInt(i.customId) - 1]
-             let vcm = getVCManager(message.guild.id)
-             if(getVCManager(message.guild.id)){
-               vcm.addToQueue(selectedoption)
+
+           const collector = message.channel.createMessageComponentCollector({ componentType: 'BUTTON', time: 60000 });
+
+           collector.on("collect", i => {
+             if(i.user.id == message.member.id){
+              if (type == "interaction"){
+                message.editReply({embeds: [embed], components: []})
+              }else{
+                message.edit({embeds: [embed], components: []})
+              }
+              i.deferReply()
+              if(i.customId == "Cancel"){
                setTimeout(function(){
-                  i.editReply({embeds: [new embedBase("Added To Queue", `Added [${selectedoption.name}](${selectedoption.url}) to the queue!`)]})
-                }, 1000)
-               if(vcm.eventEmitter._eventsCount == 0){
-                 vcm.eventEmitter.on("songData", (type, data) => {
-                   if (type == "playing"){
-                     message.channel.send({embeds: [new embedBase("Now Playing",  `Now Playing: [${data.name}](${data.url})`)]})
-                   }else if(type == "end"){
-                     message.channel.send({embeds: [new embedBase("Song Ended",  `The Song Has Ended.`)]})
-                   }else if(type == "queueEnd"){
-                     message.channel.send({embeds: [new embedBase("Queue Ended",  `The Queue Has Ended.`)]})
-                     vcm.eventEmitter.removeAllListeners(["songData"])
-                     vcm.terminateManager()
-                   }else if(type == "error"){
-                     message.channel.send({embeds: [new embedBase("Error",  `An error has occurred.\n\nPlease contact a developer with the following error message: \`\`\`${data}\`\`\``)]})
-                     vcm.eventEmitter.removeAllListeners(["songData"])
-                     vcm.terminateManager()
-                   }
-                 })
-               }
+                i.editReply({embeds: [new embedBase("Prompt Cancelled", "The prompt has been successfully cancelled.")]})
+               }, 1000)
+                return;
+              }
+              let selectedoption = datatoindex[parseInt(i.customId) - 1]
+              let vcm = getVCManager(message.guild.id)
+              if(getVCManager(message.guild.id)){
+                vcm.addToQueue(selectedoption)
+                setTimeout(function(){
+                   i.editReply({embeds: [new embedBase("Added To Queue", `Added [${selectedoption.name}](${selectedoption.url}) to the queue!`)]})
+                 }, 1000)
+                if(vcm.eventEmitter._eventsCount == 0){
+                  vcm.eventEmitter.on("songData", (type, data) => {
+                    if (type == "playing"){
+                      message.channel.send({embeds: [new embedBase("Now Playing",  `Now Playing: [${data.name}](${data.url})`)]})
+                    }else if(type == "end"){
+                      message.channel.send({embeds: [new embedBase("Song Ended",  `The Song Has Ended.`)]})
+                    }else if(type == "queueEnd"){
+                      message.channel.send({embeds: [new embedBase("Queue Ended",  `The Queue Has Ended.`)]})
+                      vcm.eventEmitter.removeAllListeners(["songData"])
+                      vcm.terminateManager()
+                    }else if(type == "error"){
+                      message.channel.send({embeds: [new embedBase("Error",  `An error has occurred.\n\nPlease contact a developer with the following error message: \`\`\`${data}\`\`\``)]})
+                      vcm.eventEmitter.removeAllListeners(["songData"])
+                      vcm.terminateManager()
+                    }
+                  })
+                }
+              }
+             }else{
+               i.reply({content: "You can't click these buttons.", ephemeral: true})
              }
-           }).catch(err =>{
-             message.channel.send({embeds: [new embedBase("Prompt Terminated", "The prompt ran out of time and has been terminated.")]})
+           })
+
+           collector.on("end", () => {
             if (type == "interaction"){
               message.editReply({embeds: [embed], components: []})
             }else{
