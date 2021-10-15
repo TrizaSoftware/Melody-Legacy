@@ -3,6 +3,7 @@ const didYouMean = require("./utils/didYouMean")
 const {REST} = require("@discordjs/rest")
 const {Routes} = require("discord-api-types/v9")
 const embedBase = require("./utils/embedBase") 
+const {getVCManager} = require("./utils/voiceConnectionManager") 
 const fs = require("fs")
 const botIntents = new Intents()
 botIntents.add(Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_INTEGRATIONS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES)
@@ -118,8 +119,19 @@ botClient.on("messageCreate", (message) => {
     }
 })
 
-
-
+botClient.on("voiceStateUpdate", (oldState, newState) => {
+  if(oldState.channelId !== null){
+    let channeldata = botClient.channels.cache.find(channel => channel.id == oldState.channelId)
+    if (channeldata.members.length -1 == 0){
+       setTimeout(function(){
+      if(channeldata.members.length -1 == 0 && getVCManager(oldState.guild.id) && getVCManager(oldState.guild.id).currentChannelId == oldState.channelId){
+       getVCManager(oldState.guild.id).terminateManager()
+      }
+    },60000)
+    }
+   
+  }
+})
 botClient.login(process.env.TOKEN)
 
 module.exports.Bot = botClient

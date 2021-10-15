@@ -64,7 +64,9 @@ module.exports = class Command extends commandBase{
           let components = new componentBase("button", componentData)
           let botMsg = undefined
           if(type == "interaction"){
-             message.editReply({embeds: [embed], components: [components, new componentBase("button", [{text: "Cancel", style: "DANGER"}])]})
+            setTimeout(function(){
+              message.editReply({embeds: [embed], components: [components, new componentBase("button", [{text: "Cancel", style: "DANGER"}])]})
+            },1500)
           }else{
             message.reply({embeds: [embed], components: [components, new componentBase("button", [{text: "Cancel", style: "DANGER"}])]}).then(msg => {
               botMsg = msg
@@ -77,11 +79,7 @@ module.exports = class Command extends commandBase{
 
            collector.on("collect", i => {
              if(i.user.id == message.member.id){
-              if (type == "interaction"){
-                message.editReply({embeds: [embed], components: []})
-              }else{
-                botMsg.edit({embeds: [embed], components: []})
-              }
+              collector.stop()
               i.deferReply()
               if(i.customId == "Cancel"){
                setTimeout(function(){
