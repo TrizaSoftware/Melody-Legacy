@@ -62,10 +62,15 @@ module.exports = class Command extends commandBase{
           }
           let embed = new embedBase("Pick a Song", "Please pick a song.", fields, "Prompt cancels in 1 minute")
           let components = new componentBase("button", componentData)
+          let botMsg = undefined
           if(type == "interaction"){
-             message.editReply({embeds: [embed], components: [components, new componentBase("button", [{text: "Cancel", style: "DANGER"}])]})
+            setTimeout(function(){
+              message.editReply({embeds: [embed], components: [components, new componentBase("button", [{text: "Cancel", style: "DANGER"}])]})
+            },1500)
           }else{
-              message.reply({embeds: [embed], components: [components, new componentBase("button", [{text: "Cancel", style: "DANGER"}])]})
+            message.reply({embeds: [embed], components: [components, new componentBase("button", [{text: "Cancel", style: "DANGER"}])]}).then(msg => {
+              botMsg = msg
+            })
               message.reactions.removeAll()
 	            .catch(error => console.log('Failed to clear reactions:', error));
           }
@@ -74,11 +79,7 @@ module.exports = class Command extends commandBase{
 
            collector.on("collect", i => {
              if(i.user.id == message.member.id){
-              if (type == "interaction"){
-                message.editReply({embeds: [embed], components: []})
-              }else{
-                message.edit({embeds: [embed], components: []})
-              }
+              collector.stop()
               i.deferReply()
               if(i.customId == "Cancel"){
                setTimeout(function(){
@@ -104,7 +105,7 @@ module.exports = class Command extends commandBase{
                       vcm.eventEmitter.removeAllListeners(["songData"])
                       vcm.terminateManager()
                     }else if(type == "error"){
-                      message.channel.send({embeds: [new embedBase("Error",  `An error has occurred.\n\nPlease contact a developer with the following error message: \`\`\`${data}\`\`\``)]})
+                      message.channel.send({embeds: [new embedBase("Error",  `An error has occurred.${data}`)]})
                       vcm.eventEmitter.removeAllListeners(["songData"])
                       vcm.terminateManager()
                     }

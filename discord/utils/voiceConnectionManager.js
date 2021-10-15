@@ -40,8 +40,12 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager{
          this.playingSong = true
        })
       }catch(err){
-        console.log(err)
-        this.eventEmitter.emit("songData", "error", err)
+        if(!err.includes(403)){
+             console.log(err)
+             this.eventEmitter.emit("songData", "error", "An error has occurred and the process has been cancelled.")
+        }else{
+          this.playSong(data)
+        }
       }
       }
 
