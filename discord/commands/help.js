@@ -1,7 +1,7 @@
 const commandBase = require("../utils/commandBase")
 const embedBase = require("../utils/embedBase")
 const Data = require("../index")
-const {serverdata} = require("../../db")
+const dataCache = require("../utils/dataCache")
 
 module.exports = class Command extends commandBase{
     constructor(){
@@ -10,10 +10,9 @@ module.exports = class Command extends commandBase{
     async execute(type, message, args){
       let categories = []
       let prefix = process.env.PREFIX
-      serverdata.findOne({serverId:message.guild.id}).then(result => {
-        if(result){
-          prefix = result.prefix
-        }
+      if(dataCache.fetchServerCache(message.guild.id) && dataCache.fetchServerCache(message.guild.id).data.prefix){
+        prefix = dataCache.fetchServerCache(message.guild.id).data.prefix
+      }
         for (let command of Data.Bot.commands){
           let actualcmddata = command[1]
            if (!categories[actualcmddata.category]){
@@ -35,6 +34,5 @@ module.exports = class Command extends commandBase{
           fields[fields.length] = categories[data]
         }
         message.reply({embeds: [new embedBase("Commands", undefined, fields)]})
-      })
     }
 }

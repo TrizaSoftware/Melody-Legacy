@@ -1,7 +1,9 @@
-const {getVoiceConnection, VoiceConnectionStatus, entersState, AudioPlayerStatus, createAudioPlayer, createAudioResource, StreamType} = require("@discordjs/voice")
+const {getVoiceConnection, VoiceConnectionStatus, entersState, AudioPlayerStatus, createAudioPlayer, createAudioResource, StreamType, joinVoiceChannel} = require("@discordjs/voice")
 const ytdl = require("ytdl-core")
 const voiceConnectionManagers = {}
 const events = require("events")
+const dataCache = require("./dataCache")
+const Discord = require("../index")
 
 module.exports.getVCManager = function(guildid){
     return voiceConnectionManagers[guildid]
@@ -67,9 +69,14 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager{
             entersState(this.connection, VoiceConnectionStatus.Signalling, 5_000),
             entersState(this.connection, VoiceConnectionStatus.Connecting, 5_000),
           ]).then((response) =>{
-            this.currentChannelId = response.joinConfig.channelId
-            console.log(`[VoiceManager] Moved to channel ${this.currentChannelId}`)
-            this.shouldLoop = false
+            let serverdata = dataCache.fetchServerCache(guildid)
+            if(serverdata && serverdata.data.musicLockEnabled && response.joinConfig.channelId !== serverdata.data.musicChannelId){
+              this.eventEmitter.emit("songData", "error", "You can't drag me out of the music channel.")
+            }else{
+              this.currentChannelId = response.joinConfig.channelId
+              console.log(`[VoiceManager] Moved to channel ${this.currentChannelId}`)
+              this.shouldLoop = false
+            }
           })
         }catch(error){
           this.terminateManager()

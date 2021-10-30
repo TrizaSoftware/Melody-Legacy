@@ -1,5 +1,6 @@
 const commandBase = require("../utils/commandBase")
 const embedBase = require("../utils/embedBase")
+const dataCache = require("../utils/dataCache")
 const {serverdata} = require("../../db")
 
 function saveData(guildid, enabled, channelid){
@@ -7,16 +8,21 @@ function saveData(guildid, enabled, channelid){
         serverdata.findOne({serverId: guildid}).then(async result => {
             if (result){
                 await serverdata.findOneAndUpdate({serverId: guildid}, {musicLockEnabled: enabled, musicChannelId: channelid})
+                new dataCache.serverCache(guildid, {musicLockEnabled: enabled, musicChannelId: channelid})
             }else{
                 serverdata.create({serverId: guildid, musicLockEnabled: enabled, musicChannelId: channelid})
+                dataCache.fetchServerCache(guildid).updateData("musicLockEnabled", enabled)
+                dataCache.fetchServerCache(guildid).updateData("musicChannelId", channelid)
             }
         })
     }else{
         serverdata.findOne({serverId: guildid}).then(async result => {
             if (result){
                 await serverdata.findOneAndUpdate({serverId: guildid}, {musicLockEnabled: enabled})
+                new dataCache.serverCache(guildid, {musicLockEnabled: enabled})
             }else{
                 serverdata.create({serverId: guildid, musicLockEnabled: enabled})
+                dataCache.fetchServerCache(guildid).updateData("musicLockEnabled", enabled)
             }
         })
     }

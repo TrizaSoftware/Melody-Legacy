@@ -10,6 +10,7 @@ botIntents.add(Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_INTEGRATIONS, Intents.F
 const rest = new REST({version: "9"}).setToken(process.env.TOKEN)
 const slashcommanddata = []
 let botClient = new Client({intents: botIntents})
+let dataCache = require("./utils/dataCache")
 let {serverdata} = require("../db")
 
 botClient.commands = new Collection()
@@ -61,10 +62,13 @@ botClient.on("interactionCreate", (interaction) => {
 })
 
 
-botClient.on("ready", () => {
+botClient.on("ready", async () => {
     const statuses = [["WATCHING", "The T:Riza Corporation"], ["PLAYING", "Some good tunes!"], ["PLAYING", "The legend that was on the cord!"], ["PLAYING", `${process.env.PREFIX}help | ${process.env.PREFIX}info`], ["WATCHING", "Jimmy!"], ["WATCHING", `${botClient.guilds.cache.size} servers!`]]
     for (let guild of botClient.guilds.cache){
         handleGuild(guild[1].id)
+    }
+    for (let part of await serverdata.find()){
+        new dataCache.serverCache(part.serverId, part)
     }
     setInterval(function(){
         let selectedstatus = statuses[Math.floor(Math.random() * statuses.length)]
@@ -98,8 +102,12 @@ botClient.on("debug", (message) => {
 })
 
 botClient.on("messageCreate", (message) => {
-    if(!message.content.startsWith(process.env.PREFIX)){return;}
-    const data = message.content.split(process.env.PREFIX)[1].split(" ")
+    let prefix = process.env.PREFIX
+    if(dataCache.fetchServerCache(message.guild.id) && dataCache.fetchServerCache(message.guild.id).data.prefix){
+        prefix = dataCache.fetchServerCache(message.guild.id).data.prefix
+    }
+    if(!message.content.startsWith(prefix)){return;}
+    const data = message.content.split(prefix)[1].split(" ")
     const command = data[0]
     const args = data.slice(1)
     const cmdfile = botClient.commands.get(command) || botClient.commands.get(botClient.aliases.get(command))
@@ -109,6 +117,7 @@ botClient.on("messageCreate", (message) => {
         cmdnames.push(cmd[1].name)
       }
       let result = didYouMean(command, cmdnames)
+      console.log(result)
       if(result.result){
           message.channel.send({embeds: [new embedBase("Autocomplete", `Did you mean **${process.env.PREFIX}${result.result}**?`)]})
       }

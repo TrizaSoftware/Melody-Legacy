@@ -1,6 +1,7 @@
 const commandBase = require("../utils/commandBase")
 const embedBase = require("../utils/embedBase")
 const {serverdata} = require("../../db")
+const dataCache = require("../utils/dataCache")
 
 module.exports = class Command extends commandBase{
     constructor(){
@@ -33,13 +34,27 @@ module.exports = class Command extends commandBase{
             return;
         }
         let newprefix = args[0].value || args[0]
+        if(dataCache.fetchServerCache(message.guild.id) && newprefix == dataCache.fetchServerCache(message.guild.id).data.prefix){
+            setTimeout(function(){
+                if (type == "interaction"){
+                    message.editReply({embeds: [new embedBase("Error", `That's already the prefix.`)]})
+                }else{
+                    message.reply({embeds: [new embedBase("Error", `That's already the prefix.`)]})
+                    message.reactions.removeAll()
+                    .catch(error => console.log('Failed to clear reactions:', error));
+                }
+            },1000)
+            return;
+        }
         setTimeout(function(){
             serverdata.findOne({serverId: message.guild.id}).then(async result => {
                 try{
                     if(!result){
                         serverdata.create({serverId: message.guild.id, prefix: newprefix})
+                        new dataCache.serverCache(message.guild.id, {prefix: newprefix})
                     }else{
                        await serverdata.findOneAndUpdate({serverId: message.guild.id}, {prefix: newprefix}, {new: true})
+                       dataCache.fetchServerCache(message.guild.id).updateData("prefix", newprefix)
                     }
                     if (type == "interaction"){
                         message.editReply({embeds: [new embedBase("Success", `Successfully changed the prefix to **${newprefix}**`)]})
