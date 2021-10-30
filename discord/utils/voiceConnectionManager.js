@@ -79,10 +79,9 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager{
       this.audioPlayer.on(AudioPlayerStatus.Idle, () => {
            this.playingSong = false
            this.eventEmitter.emit("songData", "end")
-           this.queue.shift()
-           if (this.shouldLoop){
-             this.queue.push(this.currentSong)
-           }
+           if (!this.shouldLoop){
+            this.queue.shift()
+          }
            if (this.queue.length > 0){
              this.playSong(this.queue[0])
            }else{
