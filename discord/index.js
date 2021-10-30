@@ -122,9 +122,9 @@ botClient.on("messageCreate", (message) => {
 botClient.on("voiceStateUpdate", (oldState, newState) => {
   if(oldState.channelId !== null){
     let channeldata = botClient.channels.cache.find(channel => channel.id == oldState.channelId)
-    if (channeldata.members.length -1 == 0){
+    if (channeldata.members.size -1 == 0){
        setTimeout(function(){
-      if(channeldata.members.length -1 == 0 && getVCManager(oldState.guild.id) && getVCManager(oldState.guild.id).currentChannelId == oldState.channelId){
+      if(channeldata.members.size -1 == 0 && getVCManager(oldState.guild.id) && getVCManager(oldState.guild.id).currentChannelId == oldState.channelId){
        getVCManager(oldState.guild.id).terminateManager()
       }
     },60000)
