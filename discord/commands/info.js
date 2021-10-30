@@ -4,7 +4,7 @@ const {getVCManager} = require("../utils/voiceConnectionManager")
 
 module.exports = class Command extends commandBase{
     constructor(){
-        super("info", "Information", ["i", "information", "botdata"], "Shows all information for Melody.", true)
+        super("info", "Information", ["i", "information", "botdata"], "Shows all information for Melody.", false)
     }
     async execute(type, message, args){
       if(!getVCManager(message.guild.id)){

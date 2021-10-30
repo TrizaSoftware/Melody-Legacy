@@ -5,12 +5,13 @@ const {VoiceConnectionManager, getVCManager} = require("../utils/voiceConnection
 const voice = require("@discordjs/voice")
 const fetch = require("node-fetch")
 const usetube = require("usetube")
-const component = require("../utils/componentBase")
+let dataCache = require("../utils/dataCache")
+
 
 
 module.exports = class Command extends commandBase{
     constructor(){
-        super("play", "Music", ["p", "song"], "Plays Music", true, {name: "search_term", type: 3, description: "The song you want to play.", required: true})
+        super("play", "Music", ["p", "song"], "Plays Music", true, [{name: "search_term", type: 3, description: "The song you want to play.", required: true}])
     }
     async execute(type, message, args){
         if(type == "interaction"){
@@ -30,6 +31,17 @@ module.exports = class Command extends commandBase{
             message.reply({embeds: [new embedBase("Error", "You must be in a Voice Channel to run this command.")]})
           }
         }else{
+          let serverdata = dataCache.fetchServerCache(message.guild.id)
+          if(serverdata && serverdata.data.musicLockEnabled && serverdata.data.musicChannelId !== message.member.voice.channel.id){
+            setTimeout(function(){
+              if(type == "interaction"){
+                message.editReply({embeds: [new embedBase("Error", "You must be in the music channel to play songs.")]})
+                }else{
+                message.reply({embeds: [new embedBase("Error", "You must be in the music channel to play songs.")]})
+                }
+            },1000)
+            return;
+          }
           let query
           if(args[0] && type == "chat"){
             query = args.join(" ")
@@ -105,7 +117,7 @@ module.exports = class Command extends commandBase{
                       vcm.eventEmitter.removeAllListeners(["songData"])
                       vcm.terminateManager()
                     }else if(type == "error"){
-                      message.channel.send({embeds: [new embedBase("Error",  `An error has occurred.${data}`)]})
+                      message.channel.send({embeds: [new embedBase("Error",  `An error has occurred. ${data}`)]})
                       vcm.eventEmitter.removeAllListeners(["songData"])
                       vcm.terminateManager()
                     }
