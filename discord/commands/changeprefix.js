@@ -20,13 +20,15 @@ module.exports = class Command extends commandBase{
             message.react("<a:loading:740018948522901515>")
         }
         if(!message.member.permissions.has("MANAGE_GUILD")){
-            if (type == "interaction"){
+            setTimeout(function(){
+              if (type == "interaction"){
                 message.editReply({embeds: [new embedBase("Error", `You must have the **Manage Server** permission.`)]})
-            }else{
-                message.reply({embeds: [new embedBase("Error", `You must have the **Manage Server** permission.`)]})
-                message.reactions.removeAll()
+              }else{
+                 message.reply({embeds: [new embedBase("Error", `You must have the **Manage Server** permission.`)]})
+                 message.reactions.removeAll()
                 .catch(error => console.log('Failed to clear reactions:', error));
-            } 
+              } 
+            },1000)
             return;
         }
         if(!args[0]){
