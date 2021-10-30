@@ -10,7 +10,7 @@ const component = require("../utils/componentBase")
 
 module.exports = class Command extends commandBase{
     constructor(){
-        super("play", "Music", ["p", "song"], "Plays Music", true, {name: "search_term", type: 3, description: "The song you want to play.", required: true})
+        super("play", "Music", ["p", "song"], "Plays Music", true, [{name: "search_term", type: 3, description: "The song you want to play.", required: true}])
     }
     async execute(type, message, args){
         if(type == "interaction"){

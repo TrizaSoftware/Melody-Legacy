@@ -10,6 +10,7 @@ botIntents.add(Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_INTEGRATIONS, Intents.F
 const rest = new REST({version: "9"}).setToken(process.env.TOKEN)
 const slashcommanddata = []
 let botClient = new Client({intents: botIntents})
+let {serverdata} = require("../db")
 
 botClient.commands = new Collection()
 botClient.aliases = new Collection()
@@ -30,13 +31,10 @@ cmdFiles.forEach((file) => {
 })
 
 for(let cmd of botClient.commands){
-    if (!cmd[1].slash){
-        return;
-    }
     if(!cmd[1].slashoptions){
         slashcommanddata.push({name: cmd[1].name, description: cmd[1].desc})
     }else{
-        slashcommanddata.push({name: cmd[1].name, description: cmd[1].desc, options: [cmd[1].slashoptions]})
+        slashcommanddata.push({name: cmd[1].name, description: cmd[1].desc, options: cmd[1].slashoptions})
     }
 }
 
@@ -115,6 +113,10 @@ botClient.on("messageCreate", (message) => {
           message.channel.send({embeds: [new embedBase("Autocomplete", `Did you mean **${process.env.PREFIX}${result.result}**?`)]})
       }
     }else{
+      if(cmdfile.slashonly){
+          message.channel.send({embeds:[new embedBase("Slash Only", "This command is slash only.")]})
+          return;
+      }
       cmdfile.execute("chat", message, args)
     }
 })
