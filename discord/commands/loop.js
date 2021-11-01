@@ -5,7 +5,7 @@ const {getVCManager} = require("../utils/voiceConnectionManager")
 
 module.exports = class Command extends commandBase{
     constructor(){
-        super("loop", "Music", ["l", "repeat"], "Repeats the current song.", true)
+        super("loop", "Music", ["l", "repeat"], "Repeats the current song.", false)
     }
     async execute(type, message, args){
        if(type == "interaction"){

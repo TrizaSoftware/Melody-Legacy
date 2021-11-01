@@ -106,6 +106,13 @@ botClient.on("messageCreate", (message) => {
     if(dataCache.fetchServerCache(message.guild.id) && dataCache.fetchServerCache(message.guild.id).data.prefix){
         prefix = dataCache.fetchServerCache(message.guild.id).data.prefix
     }
+    if(message.content == `<@!${botClient.user.id}>`){
+        let data = dataCache.fetchServerCache(message.guild.id)
+        if(!data){
+            data = new dataCache.serverCache(message.guild.id, {musicLockEnabled: false})
+        }
+        message.reply({embeds:[new embedBase("Server Data", "All the data Melody has on your server is listed below.", [{name: "Prefix:", value: data.data.prefix || process.env.PREFIX}, {name: "Music Channel Enabled:", value: data.data.musicLockEnabled.toString()}])]})
+    }
     if(!message.content.startsWith(prefix)){return;}
     const data = message.content.split(prefix)[1].split(" ")
     const command = data[0]
