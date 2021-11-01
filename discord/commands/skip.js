@@ -4,7 +4,7 @@ const embedBase = require("../utils/embedBase")
 
 module.exports = class Command extends commandBase{
     constructor(){
-        super("skip", "Music", ["s"], "Skips the song.", true)
+        super("skip", "Music", ["s"], "Skips the song.", false)
     }
     async execute(type, message, args){
         if(type == "interaction"){
