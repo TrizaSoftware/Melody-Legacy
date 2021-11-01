@@ -126,7 +126,7 @@ botClient.on("messageCreate", (message) => {
       let result = didYouMean(command, cmdnames)
       console.log(result)
       if(result.result){
-          message.channel.send({embeds: [new embedBase("Autocomplete", `Did you mean **${process.env.PREFIX}${result.result}**?`)]})
+          message.channel.send({embeds: [new embedBase("Autocomplete", `Did you mean **${prefix}${result.result}**?`)]})
       }
     }else{
       if(cmdfile.slashonly){
