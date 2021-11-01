@@ -9,7 +9,6 @@ module.exports.serverCache = class serverCache{
         this.data = dtiw || {}
         this.updateData = function(key, index){
             this.data[key] = index
-            console.log(this)
         }
         cache[serverid] = this
         return this
