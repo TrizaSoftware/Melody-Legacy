@@ -49,6 +49,7 @@ function handleGuild(id){
 }
 
 botClient.on("guildCreate", (guild) => {
+    console.log(`[Melody Stats]: I'm in ${botClient.guilds.cache.size} servers.`)
     handleGuild(guild.id)
 })
 
