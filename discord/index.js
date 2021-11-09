@@ -4,14 +4,13 @@ const {REST} = require("@discordjs/rest")
 const {Routes} = require("discord-api-types/v9")
 const embedBase = require("./utils/embedBase") 
 const {getVCManager} = require("./utils/voiceConnectionManager") 
-const tgg = require('top.gg')
 const fs = require("fs")
 const botIntents = new Intents()
 botIntents.add(Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_INTEGRATIONS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES)
 const rest = new REST({version: "9"}).setToken(process.env.TOKEN)
 const slashcommanddata = []
 const botClient = new Client({intents: botIntents})
-const tggc = new tgg(process.env.TOP_GG_TOKEN, botClient)
+const { AutoPoster } = require('topgg-autoposter')
 const dataCache = require("./utils/dataCache")
 const {serverdata} = require("../db")
 
@@ -20,13 +19,14 @@ botClient.aliases = new Collection()
 
 const cmdFiles = fs.readdirSync("discord/commands").filter((file) => (file.endsWith(".js")))
 
-tggc.on("posted", () => {
-    console.log("Posted Data")
-})
-
 process.on('unhandledRejection', error => {
 	console.log('Unhandled promise rejection:', error);
 });
+
+AutoPoster(process.env.TOP_GG_TOKEN, botClient)
+  .on('posted', () => {
+    console.log('Posted stats to Top.gg!')
+  })
 
 cmdFiles.forEach((file) => {
     const module = require(`./commands/${file}`)
@@ -117,10 +117,12 @@ botClient.on("messageCreate", (message) => {
     if(message.content == `<@!${botClient.user.id}>`){
         let data = dataCache.fetchServerCache(message.guild.id)
         let embed = undefined
-        if(data.data.musicChannelId){
-           embed = new embedBase("Server Data", "All the data Melody has on your server is listed below.", [{name: "Prefix:", value: data.data.prefix || process.env.PREFIX}, {name: "Music Channel Enabled:", value: data.data.musicLockEnabled.toString()}, {name: "Music Channel:", value:`<#${data.data.musicChannelId}>`}])
+        if(data && data.data.musicChannelId){
+           embed = new embedBase("Server Data", "All the data Melody has on this server is listed below.", [{name: "Prefix:", value: data.data.prefix || process.env.PREFIX}, {name: "Music Channel Enabled:", value: data.data.musicLockEnabled.toString()}, {name: "Music Channel:", value:`<#${data.data.musicChannelId}>`}])
+        }else if (data){
+           embed = new embedBase("Server Data", "All the data Melody has on this server is listed below.", [{name: "Prefix:", value: data.data.prefix || process.env.PREFIX}, {name: "Music Channel Enabled:", value: data.data.musicLockEnabled.toString()}])
         }else{
-           embed = new embedBase("Server Data", "All the data Melody has on your server is listed below.", [{name: "Prefix:", value: data.data.prefix || process.env.PREFIX}, {name: "Music Channel Enabled:", value: data.data.musicLockEnabled.toString()}])
+          embed = new embedBase("Error", "No data exists for this server in our database.")
         }
         if(!data){
             data = new dataCache.serverCache(message.guild.id, {musicLockEnabled: false})
