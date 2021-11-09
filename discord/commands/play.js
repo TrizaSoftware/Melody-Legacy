@@ -133,7 +133,7 @@ module.exports = class Command extends commandBase{
             if (type == "interaction"){
               message.editReply({embeds: [embed], components: []})
             }else{
-              message.edit({embeds: [embed], components: []})
+              botMsg.edit({embeds: [embed], components: []})
             }
            })
            //Old Code For Handling Songs
