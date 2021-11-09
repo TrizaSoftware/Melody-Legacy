@@ -4,19 +4,25 @@ const {REST} = require("@discordjs/rest")
 const {Routes} = require("discord-api-types/v9")
 const embedBase = require("./utils/embedBase") 
 const {getVCManager} = require("./utils/voiceConnectionManager") 
+const tgg = require('top.gg')
 const fs = require("fs")
 const botIntents = new Intents()
 botIntents.add(Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_INTEGRATIONS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES)
 const rest = new REST({version: "9"}).setToken(process.env.TOKEN)
 const slashcommanddata = []
-let botClient = new Client({intents: botIntents})
-let dataCache = require("./utils/dataCache")
-let {serverdata} = require("../db")
+const botClient = new Client({intents: botIntents})
+const tggc = new tgg(process.env.TOP_GG_TOKEN, botClient)
+const dataCache = require("./utils/dataCache")
+const {serverdata} = require("../db")
 
 botClient.commands = new Collection()
 botClient.aliases = new Collection()
 
 const cmdFiles = fs.readdirSync("discord/commands").filter((file) => (file.endsWith(".js")))
+
+tggc.on("posted", () => {
+    console.log("Posted Data")
+})
 
 process.on('unhandledRejection', error => {
 	console.log('Unhandled promise rejection:', error);
