@@ -110,10 +110,16 @@ botClient.on("messageCreate", (message) => {
     }
     if(message.content == `<@!${botClient.user.id}>`){
         let data = dataCache.fetchServerCache(message.guild.id)
+        let embed = undefined
+        if(data.data.musicChannelId){
+           embed = new embedBase("Server Data", "All the data Melody has on your server is listed below.", [{name: "Prefix:", value: data.data.prefix || process.env.PREFIX}, {name: "Music Channel Enabled:", value: data.data.musicLockEnabled.toString()}, {name: "Music Channel:", value:`<#${data.data.musicChannelId}>`}])
+        }else{
+           embed = new embedBase("Server Data", "All the data Melody has on your server is listed below.", [{name: "Prefix:", value: data.data.prefix || process.env.PREFIX}, {name: "Music Channel Enabled:", value: data.data.musicLockEnabled.toString()}])
+        }
         if(!data){
             data = new dataCache.serverCache(message.guild.id, {musicLockEnabled: false})
         }
-        message.reply({embeds:[new embedBase("Server Data", "All the data Melody has on your server is listed below.", [{name: "Prefix:", value: data.data.prefix || process.env.PREFIX}, {name: "Music Channel Enabled:", value: data.data.musicLockEnabled.toString()}])]})
+        message.reply({embeds:[embed]})
     }
     if(!message.content.startsWith(prefix)){return;}
     const data = message.content.split(prefix)[1].split(" ")
