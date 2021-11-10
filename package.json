@@ -1,6 +1,6 @@
 {
   "name": "melody",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -31,7 +31,7 @@
     "nodemon": "^2.0.13",
     "opusscript": "^0.0.8",
     "soundcloud-downloader": "^1.0.0",
-    "top.gg": "^2.3.2",
+    "topgg-autoposter": "^2.0.0",
     "tweetnacl": "^1.0.3",
     "usetube": "^2.1.4",
     "ytdl-core": "^4.9.1"
