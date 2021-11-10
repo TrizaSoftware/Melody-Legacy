@@ -109,8 +109,10 @@ module.exports = class Command extends commandBase{
                 if(vcm.eventEmitter._eventsCount == 0){
                   vcm.eventEmitter.on("songData", (type, data) => {
                     if (type == "playing"){
+                      if(vcm.shouldLoop){return;}
                       message.channel.send({embeds: [new embedBase("Now Playing",  `Now Playing: [${data.name}](${data.url})`)]})
                     }else if(type == "end"){
+                      if(vcm.shouldLoop){return;}
                       message.channel.send({embeds: [new embedBase("Song Ended",  `The Song Has Ended.`)]})
                     }else if(type == "queueEnd"){
                       message.channel.send({embeds: [new embedBase("Queue Ended",  `The Queue Has Ended.`)]})
