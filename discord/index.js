@@ -21,6 +21,7 @@ const cmdFiles = fs.readdirSync("discord/commands").filter((file) => (file.endsW
 
 process.on('unhandledRejection', error => {
 	console.log('Unhandled promise rejection:', error);
+    botClient.channels.cache.find(channel => channel.id == "907947763025719387").send({embeds: [new embedBase("Error", error)]})
 });
 
 AutoPoster(process.env.TOP_GG_TOKEN, botClient)
