@@ -24,6 +24,11 @@ process.on('unhandledRejection', error => {
     botClient.channels.cache.find(channel => channel.id == "907947763025719387").send({embeds: [new embedBase("Error", error.toString())]})
 });
 
+process.on('uncaughtException', error => {
+	console.log('Uncaught exception:', error);
+    botClient.channels.cache.find(channel => channel.id == "907947763025719387").send({embeds: [new embedBase("Error", error.toString())]})
+});
+
 AutoPoster(process.env.TOP_GG_TOKEN, botClient)
   .on('posted', () => {
     console.log('Posted stats to Top.gg!')
