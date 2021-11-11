@@ -5,24 +5,22 @@ const {serverdata} = require("../../db")
 
 function saveData(guildid, enabled, channelid){
     if (channelid){
+        dataCache.fetchServerCache(guildid).updateData("musicLockEnabled", enabled)
+        dataCache.fetchServerCache(guildid).updateData("musicChannelId", channelid)
         serverdata.findOne({serverId: guildid}).then(async result => {
             if (result){
                 await serverdata.findOneAndUpdate({serverId: guildid}, {musicLockEnabled: enabled, musicChannelId: channelid})
-                new dataCache.serverCache(guildid, {musicLockEnabled: enabled, musicChannelId: channelid})
             }else{
                 serverdata.create({serverId: guildid, musicLockEnabled: enabled, musicChannelId: channelid})
-                dataCache.fetchServerCache(guildid).updateData("musicLockEnabled", enabled)
-                dataCache.fetchServerCache(guildid).updateData("musicChannelId", channelid)
             }
         })
     }else{
+        dataCache.fetchServerCache(guildid).updateData("musicLockEnabled", enabled)
         serverdata.findOne({serverId: guildid}).then(async result => {
             if (result){
                 await serverdata.findOneAndUpdate({serverId: guildid}, {musicLockEnabled: enabled})
-                new dataCache.serverCache(guildid, {musicLockEnabled: enabled})
             }else{
                 serverdata.create({serverId: guildid, musicLockEnabled: enabled})
-                dataCache.fetchServerCache(guildid).updateData("musicLockEnabled", enabled)
             }
         })
     }
