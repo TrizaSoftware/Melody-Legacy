@@ -3,7 +3,7 @@ const ytdl = require("ytdl-core")
 const voiceConnectionManagers = {}
 const events = require("events")
 const dataCache = require("./dataCache")
-const Discord = require("../index")
+const Discord = require("../bot")
 
 module.exports.getVCManager = function(guildid){
     return voiceConnectionManagers[guildid]
