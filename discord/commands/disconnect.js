@@ -1,6 +1,7 @@
 const commandBase = require("../utils/commandBase")
 const embedBase = require("../utils/embedBase")
 const {getVCManager} = require("../utils/voiceConnectionManager")
+const {fetchServerCache} = require("../utils/dataCache")
 
 module.exports = class Command extends commandBase{
     constructor(){
