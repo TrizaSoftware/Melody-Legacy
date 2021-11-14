@@ -1,6 +1,7 @@
 const commandBase = require("../utils/commandBase")
 const embedBase = require("../utils/embedBase")
 const {getVCManager} = require("../utils/voiceConnectionManager")
+const {fetchServerCache} = require("../utils/dataCache")
 
 module.exports = class Command extends commandBase{
     constructor(){
@@ -11,7 +12,6 @@ module.exports = class Command extends commandBase{
             // message.reply({embeds: [new embedBase("Test", "Test", [{name: "test", value: "test", inline: true}])]})
             let member = message.guild.members.cache.find(member => member.id == message.user.id)
             message.member = member
-            message.deferReply()
         }
       const vcm = getVCManager(message.guild.id)
       let datacache = fetchServerCache(message.guild.id)
