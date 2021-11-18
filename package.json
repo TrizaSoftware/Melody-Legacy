@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@types/node": "^16.10.1",
-    "node": "^16.10.0"
+    "node": "^17.1.0"
   },
   "keywords": [],
   "description": ""
