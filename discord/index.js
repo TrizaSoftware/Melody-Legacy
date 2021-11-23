@@ -21,3 +21,16 @@ manager.on('shardCreate', shard => {
 manager.spawn();
 
 module.exports = manager
+
+process.on('unhandledRejection', error => {
+	console.log('Unhandled promise rejection:', error);
+  console.log(error.stack);
+  if (error.body) {
+    error.body.on('data', x => process.stdout.write(x))
+  }
+})
+
+process.on('uncaughtException', error => {
+	console.log('Uncaught exception:', error);
+  console.log(error.stack);
+})
