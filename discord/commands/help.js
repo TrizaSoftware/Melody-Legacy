@@ -1,6 +1,6 @@
 const commandBase = require("../utils/commandBase")
 const embedBase = require("../utils/embedBase")
-const Data = require("../bot")
+const Data = require("..")
 const dataCache = require("../utils/dataCache")
 
 module.exports = class Command extends commandBase{
