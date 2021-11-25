@@ -4,7 +4,7 @@ const app = express()
 app.use("/api", require("./api"))
 
 app.use("/invite", (req, res) => {
-  res.redirect("https://discord.com/oauth2/authorize?client_id=726143653898354758&permissions=6445862216&scope=bot%20applications.commands%20messages.read")
+  res.redirect("https://discord.com/oauth2/authorize?client_id=726143653898354758&permissions=281323834696&scope=bot%20applications.commands%20messages.read")
 })
 
 app.use("/join", (req, res) => {
