@@ -30,13 +30,16 @@ module.exports = class Command extends commandBase{
                 return checked
                }
                function findchannel(guild){
+                 let selectedchannel = undefined
                 for (let channel of guild.channels.cache){
                     if (channel[1].name.includes("general") && channel[1].type == "GUILD_TEXT"){
-                        return channel
-                    }else{
-                        return guild.channels.cache.find(channel => channel.type == "GUILD_TEXT")
+                        selectedchannel =  channel
                     }
                 }  
+                if(!selectedchannel){
+                 selectedchannel = guild.channels.cache.find(channel => channel.type == "GUILD_TEXT")
+                }
+                return selectedchannel
                }
                for (let guild of bot.Bot.guilds.cache){
                     let ag = guild[1]
