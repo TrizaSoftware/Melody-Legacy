@@ -6,7 +6,7 @@ const embedBase = require("./utils/embedBase")
 const { getVCManager } = require("./utils/voiceConnectionManager")
 const fs = require("fs")
 const botIntents = new Intents()
-botIntents.add(Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_INTEGRATIONS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES)
+botIntents.add(Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_INTEGRATIONS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.DIRECT_MESSAGES)
 const rest = new REST({ version: "9" }).setToken(process.env.TOKEN)
 const slashcommanddata = []
 const botClient = new Client({ intents: botIntents })
@@ -137,6 +137,13 @@ botClient.on("warn", console.log)
 
 botClient.on("messageCreate", (message) => {
   let prefix = process.env.PREFIX
+  if(message.author.bot == true){
+    return 
+  }
+  if(!message.guild){
+    message.channel.send(":wave: I only respond to messages in servers..")
+    return;
+  }
   if (dataCache.fetchServerCache(message.guild.id) && dataCache.fetchServerCache(message.guild.id).data.prefix) {
     prefix = dataCache.fetchServerCache(message.guild.id).data.prefix
   }
@@ -174,11 +181,12 @@ botClient.on("messageCreate", (message) => {
       message.channel.send({ embeds: [new embedBase("Autocomplete", `Did you mean **${prefix}${result.result}**?`)] })
     }
   } else {
+    if (cmdfile.commandserveronly && message.guild.id !== process.env.COMMAND_SERVER_ID) {
+      message.channel.send({ embeds: [new embedBase("Command Server Only", "This command can only be ran in the main melody server.")] })
+      return;
+    }
     if (cmdfile.slashonly) {
       message.channel.send({ embeds: [new embedBase("Slash Only", "This command is slash only.")] })
-      return;
-    } else if (cmdfile.commandserveronly && message.guild.id !== process.env.COMMAND_SERVER_ID) {
-      message.channel.send({ embeds: [new embedBase("Command Server Only", "This command can only be ran in the main melody server.")] })
       return;
     }
     cmdfile.execute("chat", message, args)

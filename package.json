@@ -1,6 +1,6 @@
 {
   "name": "melody",
-  "version": "1.6.1",
+  "version": "1.6.4",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -8,18 +8,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/CodedJimmy/electron-test.git"
+    "url": "git+https://github.com/TrizaCorporation/melody.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/CodedJimmy/electron-test/issues"
+    "url": "https://github.com/TrizaCorporation/melody/issues"
   },
-  "homepage": "https://github.com/CodedJimmy/electron-test#readme",
   "dependencies": {
     "@discordjs/rest": "0.1.0-canary.0",
     "@discordjs/voice": "^0.7.5",
-    "discord-api-types": "^0.24.0",
+    "discord-api-types": "^0.25.1",
     "discord.js": "^13.1.0",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
