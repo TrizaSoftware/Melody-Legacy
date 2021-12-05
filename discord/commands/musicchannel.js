@@ -38,7 +38,8 @@ module.exports = class Command extends commandBase{
             name: "channel",
             type: 7,
             description: "What channel you want the bot to be bound to.",
-            required: false
+            required: false,
+            channel_types: [2]
         }])
     }
     async execute(type, message, args){

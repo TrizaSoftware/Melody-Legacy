@@ -37,10 +37,12 @@ process.on('uncaughtException', error => {
   }
 });
 
-AutoPoster(process.env.TOP_GG_TOKEN, botClient)
+if(process.env.ENVIRONMENT !== "Dev"){
+  AutoPoster(process.env.TOP_GG_TOKEN, botClient)
   .on('posted', () => {
     console.log('Posted stats to Top.gg!')
   })
+}
 
 cmdFiles.forEach((file) => {
   const module = require(`./commands/${file}`)
@@ -162,6 +164,9 @@ botClient.on("messageCreate", (message) => {
     }
     if (data.data.djRoleId) {
       fields.push({ name: "DJ Role:", value: `<@&${data.data.djRoleId}>` })
+    }
+    if (data.data.announcementsChannel) {
+      fields.push({ name: "Announcements Channel:", value: `<#${data.data.announcementsChannel}>` })
     }
     message.reply({ embeds: [new embedBase("Server Data", "All of the data Melody has on this server is listed below.", fields)] })
   }
