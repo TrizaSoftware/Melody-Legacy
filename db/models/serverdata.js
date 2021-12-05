@@ -6,7 +6,8 @@ const schema = new mongoose.Schema({
     musicChannelId: {type: String, required: false},
     musicLockEnabled: {type: Boolean, required: false},
     djRoleId: {type: String, required: false},
-    djRoleEnabled: {type: Boolean, required: false}
+    djRoleEnabled: {type: Boolean, required: false},
+    announcementsChannel: {type: String, required: false}
 })
 
 const model = mongoose.model("serverdata",schema)
