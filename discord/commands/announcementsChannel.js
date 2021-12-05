@@ -18,7 +18,7 @@ module.exports = class Command extends commandBase{
         let servercache = dataCache.fetchServerCache(message.guild.id) 
         if(!message.member.permissions.has("MANAGE_GUILD")){
             setTimeout(function(){
-             message.editReply({embeds: [new embedBase("Error", `You must have the **Manage Server** permission.`)]})
+             message.reply({embeds: [new embedBase("Error", `You must have the **Manage Server** permission.`)]})
             },1000)
             return;
         }
