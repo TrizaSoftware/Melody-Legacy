@@ -58,9 +58,9 @@ module.exports = class Command extends commandBase{
                     messagessent[ag.id] = false
                     try{
                         channel.send({embeds: [new embedBase("Melody Announcement", msg, [{name: "Posted By:", value: `${message.user.username}#${message.user.discriminator}`}])]}).then(() => {
-                           m.edit({embeds: [new embedBase("Announce", undefined, [{name: "Servers Notified:", value: dst().toString()}, {name: "Percent Complete:", value: `${Math.floor((serverschecked() / bot.Bot.guilds.cache.size) * 100)}%`}])]})
+                           messagessent[ag.id] = true
+                           m.edit({embeds: [new embedBase("Announce", undefined, [{name: "Servers Notified:", value: dst().toString()}, {name: "Percent Complete:", value: `${Math.floor((dst() / bot.Bot.guilds.cache.size) * 100)}%`}])]})
                         })
-                        messagessent[ag.id] = true
                     }catch(err){
                         console.log(err)
                         console.log(`An error occurred while notifying server: ${ag.id}`)
