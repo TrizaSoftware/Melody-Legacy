@@ -31,7 +31,7 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager{
           filter: "audioonly",
           highWaterMark: 1 << 25,
         })
-        
+      
       try{
        let resource = createAudioResource(stream, {inputType: StreamType.Arbitrary})
         this.audioPlayer.play(resource)
@@ -87,11 +87,17 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager{
            this.eventEmitter.emit("songData", "end")
            if (!this.shouldLoop){
             this.queue.shift()
-          }
+           }
            if (this.queue.length > 0){
              this.playSong(this.queue[0])
            }else{
-             this.eventEmitter.emit("songData", "queueEnd")
+             let dfr = this
+             setTimeout(function(){
+               if(!dfr.queue[0]){
+                 dfr.eventEmitter.emit("songData", "timeout")
+                 dfr.terminateManager()
+               }
+             },300000)
            }
        })
 

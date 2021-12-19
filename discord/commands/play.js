@@ -39,7 +39,7 @@ module.exports = class Command extends commandBase {
           } else {
             message.reply({ embeds: [new embedBase("Error", "You must be in the music channel to play songs.")] })
           }
-        }, 1000)
+        }, 500)
         return;
       }
       let query
@@ -78,7 +78,7 @@ module.exports = class Command extends commandBase {
       if (type == "interaction") {
         setTimeout(function () {
           message.editReply({ embeds: [embed], components: [components, new componentBase("button", [{ text: "Cancel", style: "DANGER" }])] })
-        }, 1500)
+        }, 500)
       } else {
         message.reply({ embeds: [embed], components: [components, new componentBase("button", [{ text: "Cancel", style: "DANGER" }])] }).then(msg => {
           botMsg = msg
@@ -96,7 +96,7 @@ module.exports = class Command extends commandBase {
           if (i.customId == "Cancel") {
             setTimeout(function () {
               i.editReply({ embeds: [new embedBase("Prompt Cancelled", "The prompt has been successfully cancelled.")] })
-            }, 1000)
+            }, 500)
             return;
           }
           let selectedoption = datatoindex[parseInt(i.customId) - 1]
@@ -105,7 +105,7 @@ module.exports = class Command extends commandBase {
             vcm.addToQueue(selectedoption)
             setTimeout(function () {
               i.editReply({ embeds: [new embedBase("Added To Queue", `Added [${selectedoption.name}](${selectedoption.url}) to the queue!`)] })
-            }, 1000)
+            }, 500)
             if (vcm.eventEmitter._eventsCount == 0) {
               vcm.eventEmitter.on("songData", (type, data) => {
                 if (type == "playing") {
@@ -114,10 +114,9 @@ module.exports = class Command extends commandBase {
                 } else if (type == "end") {
                   if (vcm.shouldLoop) { return; }
                   message.channel.send({ embeds: [new embedBase("Song Ended", `The Song Has Ended.`)] })
-                } else if (type == "queueEnd") {
-                  message.channel.send({ embeds: [new embedBase("Queue Ended", `The Queue Has Ended.`)] })
+                } else if (type == "timeout") {
+                  message.channel.send({ embeds: [new embedBase("Timeout", `No new songs have been played in 5 minutes so I've disconnected from the voice channel.`)] })
                   vcm.eventEmitter.removeAllListeners(["songData"])
-                  vcm.terminateManager()
                 } else if (type == "error") {
                   message.channel.send({ embeds: [new embedBase("Error", `An error has occurred. ${data}`)] })
                   vcm.eventEmitter.removeAllListeners(["songData"])
