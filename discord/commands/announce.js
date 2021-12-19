@@ -15,16 +15,18 @@ module.exports = class Command extends commandBase{
                function dst(){
                    let passed = 0
                    for(let item in messagessent){
-                       if(messagessent[item] == true){
+                       if(messagessent[item].sentmessage == true){
                            passed += 1
                        }
                    }
                    return passed
                }
-               function serverschecked(){
+                function attemptedservers(){
                 let checked = 0
                 for(let item in messagessent){
-                    checked += 1
+                    if(messagessent[item].attemptedmessage == true){
+                        checked += 1
+                    }
                 }
                 return checked
                }
@@ -52,30 +54,36 @@ module.exports = class Command extends commandBase{
                        return name
                    }
                }
+               function notifyuser(){
+                if(attemptedservers() == bot.Bot.guilds.cache.size){
+                    let fields = []
+                    for (let serverid in messagessent){
+                        let guild = bot.Bot.guilds.cache.find(guild => guild.id == serverid)
+                        if (messagessent[serverid].sentmessage == true){
+                            fields.push({name: `${shortenservername(guild.name)}:`, value: `✅ | <#${findchannel(guild).id}>`})
+                        }else{
+                            fields.push({name: `${shortenservername(guild.name)}:`, value: `❌ | <#${findchannel(guild).id}>`})
+                        }
+                    }
+                    message.user.send({embeds:[new embedBase("Announce Results", undefined, fields)]})
+                }
+               }
                for (let guild of bot.Bot.guilds.cache){
                     let ag = guild[1]
                     let channel = findchannel(ag)
-                    messagessent[ag.id] = false
+                    messagessent[ag.id] = {sentmessage: false, attemptedmessage:false}
                     try{
                         channel.send({embeds: [new embedBase("Melody Announcement", msg, [{name: "Posted By:", value: `${message.user.username}#${message.user.discriminator}`}])]}).then(() => {
-                           messagessent[ag.id] = true
-                           m.edit({embeds: [new embedBase("Announce", undefined, [{name: "Servers Notified:", value: dst().toString()}, {name: "Percent Complete:", value: `${Math.floor((dst() / bot.Bot.guilds.cache.size) * 100)}%`}])]})
+                            messagessent[ag.id].sentmessage = true
+                            messagessent[ag.id].attemptedmessage = true 
+                            m.edit({embeds: [new embedBase("Announce", undefined, [{name: "Servers Notified:", value: dst().toString()}, {name: "Percent Complete:", value: `${Math.floor((dst() / bot.Bot.guilds.cache.size) * 100)}%`}])]})
+                            notifyuser()
                         })
                     }catch(err){
+                        messagessent[ag.id].attemptedmessage = true
                         console.log(err)
                         console.log(`An error occurred while notifying server: ${ag.id}`)
-                    }
-                    if(serverschecked() == bot.Bot.guilds.cache.size){
-                        let fields = []
-                        for (let serverid in messagessent){
-                            let guild = bot.Bot.guilds.cache.find(guild => guild.id == serverid)
-                            if (messagessent[serverid] == true){
-                                fields.push({name: `${shortenservername(guild.name)}:`, value: `✅ | <#${findchannel(guild).id}>`})
-                            }else{
-                                fields.push({name: `${shortenservername(guild.name)}:`, value: `❌ | <#${findchannel(guild).id}>`})
-                            }
-                        }
-                        message.user.send({embeds:[new embedBase("Announce Results", undefined, fields)]})
+                        notifyuser()
                     }
                 }
                
