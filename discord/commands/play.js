@@ -3,7 +3,6 @@ const embedBase = require("../utils/embedBase")
 const componentBase = require("../utils/componentBase")
 const { VoiceConnectionManager, getVCManager } = require("../utils/voiceConnectionManager")
 const voice = require("@discordjs/voice")
-const fetch = require("node-fetch")
 const usetube = require("usetube")
 let dataCache = require("../utils/dataCache")
 
