@@ -76,6 +76,6 @@ module.exports = class Command extends commandBase{
                     }
                 }
             })
-        },1000)
+        },1500)
     }
 }

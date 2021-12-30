@@ -73,6 +73,6 @@ module.exports = class Command extends commandBase{
                 message.editReply({embeds: [new embedBase("Success", "Successfully Saved Settings.")]})
             }
         }
-    },1000)
+    },1500)
     }
 }

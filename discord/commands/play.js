@@ -25,7 +25,7 @@ module.exports = class Command extends commandBase {
       if (type == "interaction") {
         setTimeout(function () {
           message.editReply({ embeds: [new embedBase("Error", "You must be in a Voice Channel to run this command.")] })
-        }, 500)
+        }, 1000)
       } else {
         message.reply({ embeds: [new embedBase("Error", "You must be in a Voice Channel to run this command.")] })
       }
@@ -38,7 +38,7 @@ module.exports = class Command extends commandBase {
           } else {
             message.reply({ embeds: [new embedBase("Error", "You must be in the music channel to play songs.")] })
           }
-        }, 500)
+        }, 1000)
         return;
       }
       let query
@@ -77,7 +77,7 @@ module.exports = class Command extends commandBase {
       if (type == "interaction") {
         setTimeout(function () {
           message.editReply({ embeds: [embed], components: [components, new componentBase("button", [{ text: "Cancel", style: "DANGER" }])] })
-        }, 500)
+        }, 1000)
       } else {
         message.reply({ embeds: [embed], components: [components, new componentBase("button", [{ text: "Cancel", style: "DANGER" }])] }).then(msg => {
           botMsg = msg
