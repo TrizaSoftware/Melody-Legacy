@@ -54,6 +54,7 @@ module.exports = class Command extends commandBase {
                         return name
                     }
                 }
+                /*
                 function notifyuser() {
                     if (attemptedservers() == bot.Bot.guilds.cache.size) {
                         let fields = []
@@ -68,6 +69,7 @@ module.exports = class Command extends commandBase {
                         message.user.send({ embeds: [new embedBase("Announce Results", undefined, fields)] })
                     }
                 }
+                */
                 for (let guild of bot.Bot.guilds.cache) {
                     let ag = guild[1]
                     let channel = findchannel(ag)
@@ -76,12 +78,10 @@ module.exports = class Command extends commandBase {
                         messagessent[ag.id].sentmessage = true
                         messagessent[ag.id].attemptedmessage = true
                         m.edit({ embeds: [new embedBase("Announce", undefined, [{ name: "Servers Notified:", value: dst().toString() }, { name: "Percent Complete:", value: `${Math.floor((dst() / bot.Bot.guilds.cache.size) * 100)}%` }])] })
-                        notifyuser()
                     }).catch((err) => {
                         messagessent[ag.id].attemptedmessage = true
                         console.log(err)
                         console.log(`An error occurred while notifying server: ${ag.id}`)
-                        notifyuser()
                     })
                 }
 
