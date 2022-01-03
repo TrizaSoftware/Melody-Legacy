@@ -80,7 +80,7 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager {
           } else {
             this.currentChannelId = response.joinConfig.channelId
             console.log(`[VoiceManager] Moved to channel ${this.currentChannelId}`)
-            this.shouldLoop = false
+            this.loopType = undefined
           }
         })
       } catch (error) {
