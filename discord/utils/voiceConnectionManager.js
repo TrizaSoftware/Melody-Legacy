@@ -22,7 +22,8 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager {
     this.eventEmitter._maxListeners = 1
     this.currentChannelId = channelid
     this.playingSong = false
-    this.shouldLoop = false
+    this.currentSongId = 0
+    this.loopType = undefined
     this.queue = []
     this.currentSong = undefined
     this.audioPlayer = createAudioPlayer()
@@ -90,11 +91,25 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager {
     this.audioPlayer.on(AudioPlayerStatus.Idle, () => {
       this.playingSong = false
       this.eventEmitter.emit("songData", "end")
-      if (!this.shouldLoop) {
-        this.queue.shift()
+      if (!this.loopType) {
+        if((this.currentSongId) > 0){
+          this.queue.splice(this.currentSongId, this.currentSongId)
+          this.currentSongId = 0
+        }else{
+          this.queue.shift()
+        }
       }
       if (this.queue.length > 0) {
-        this.playSong(this.queue[0])
+        if(this.loopType == "song"){
+          this.playSong(this.queue[0])
+        }else{
+          if (this.queue[this.currentSongId + 1]){
+            this.currentSongId += 1
+          }else{
+            this.currentSongId = 0
+          }
+          this.playSong(this.queue[this.currentSongId])
+        }
       } else {
         let dfr = this
         this.timeoutTimer = setTimeout(function () {
