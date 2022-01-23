@@ -1,9 +1,10 @@
 const { getVoiceConnection, VoiceConnectionStatus, entersState, AudioPlayerStatus, createAudioPlayer, createAudioResource, StreamType, joinVoiceChannel } = require("@discordjs/voice")
-const ytdl = require("ytdl-core")
+const {Player} = require("erela.js")
 const voiceConnectionManagers = {}
 const events = require("events")
 const dataCache = require("./dataCache")
 const Discord = require("..")
+const ytdl = require("ytdl-core")
 
 module.exports.getVCManager = function (guildid) {
   return voiceConnectionManagers[guildid]
@@ -17,7 +18,6 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager {
     }
     console.log(`[VoiceManager] Connection Manager Created for Guild ${guildid}`)
     const EventEmitter = new events.EventEmitter()
-    this.connection = getVoiceConnection(guildid)
     this.eventEmitter = EventEmitter
     this.eventEmitter._maxListeners = 1
     this.currentChannelId = channelid
@@ -27,8 +27,12 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager {
     this.queue = []
     this.currentSong = undefined
     this.audioPlayer = createAudioPlayer()
+    //this.erelaPlayer = new Player({guild: guildid, selfDeafen: true, voiceChannel: channelid})
+    //this.erelaPlayer.connect()
+    this.connection = getVoiceConnection(guildid)
     this.timeoutTimer
     this.playSong = async function (data) {
+      //this.erelaPlayer.play(data)
       let stream = ytdl(data.url, {
         filter: "audioonly",
         highWaterMark: 1 << 25,
@@ -44,7 +48,7 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager {
           this.playingSong = true
         })
       } catch (err) {
-        if (!err.toString().includes(403)) {
+        if (!err.toString().includes(403) && !err.toString().includes("AbortError")) {
           console.log(err)
           this.eventEmitter.emit("songData", "error", "An error has occurred and the process has been cancelled.")
         } else {
@@ -53,7 +57,12 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager {
       }
     }
 
-    this.addToQueue = function (data) {
+    this.addToQueue = async function (data) {
+      if(data.resolve){
+        let name = `${data.author} - ${data.title}`
+        await data.resolve()
+        data = {name: name, url: data.uri}
+      }
       this.queue[this.queue.length] = data
       if (this.queue.length == 1) {
         this.playSong(this.queue[0])
@@ -68,6 +77,7 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager {
       voiceConnectionManagers[guildid] = undefined
       this.connection.destroy()
     }
+    /*
     this.connection.on(VoiceConnectionStatus.Disconnected, async (oldState, newState) => {
       try {
         await Promise.race([
@@ -87,7 +97,7 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager {
         this.terminateManager()
       }
     })
-
+    */
     this.audioPlayer.on(AudioPlayerStatus.Idle, () => {
       this.playingSong = false
       this.eventEmitter.emit("songData", "end")
@@ -103,7 +113,7 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager {
         if(this.loopType == "song"){
           this.playSong(this.queue[0])
         }else{
-          if (this.queue[this.currentSongId + 1]){
+          if (this.queue[this.currentSongId + 1] && this.loopType == "queue"){
             this.currentSongId += 1
           }else{
             this.currentSongId = 0

@@ -15,6 +15,6 @@ app.use((req, res) => {
   res.status(200).json({message: "OK"})
 });
 
-app.listen(3000, () => {
+app.listen(7000, () => {
   console.log("[WEB] Melody server online.")
 })

@@ -10,6 +10,7 @@ module.exports = class component{
                 let object = new MessageButton()
                 .setStyle(button.style || "PRIMARY")
                 .setLabel(button.text)
+                .setDisabled(button.disabled || false)
                 .setCustomId(button.text)
                 row.addComponents(object)
             }
