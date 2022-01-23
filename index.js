@@ -1,4 +1,4 @@
 require('dotenv').config()
 
-require("./discord")
+require("./discord/shardmanager")
 require("./web")

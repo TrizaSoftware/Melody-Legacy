@@ -13,9 +13,40 @@ const botClient = new Client({ intents: botIntents })
 const { AutoPoster } = require('topgg-autoposter')
 const dataCache = require("./utils/dataCache")
 const { serverdata } = require("../db")
+const { Manager } = require("erela.js")
+const Spotify = require("erela.js-spotify")
 
 botClient.commands = new Collection()
 botClient.aliases = new Collection()
+botClient.erelajs = new Manager({
+  nodes: [
+    {
+      host: "lavalink.triza.dev",
+      port: 443,
+      password: "MelodyLavalinke93213912321kfdsk",
+      secure: true
+    },
+    {
+      host: "lavalink.eu",
+      port: 2333,
+      password: "Raccoon"
+    }
+  ],
+  plugins: [
+    new Spotify({
+      clientID: "3cc8f81c712446198834f50c08a2664f",
+      clientSecret: process.env.SPOTIFY_TOKEN
+    })
+  ],
+  send(id, payload) {
+    const guild = botClient.guilds.cache.get(id);
+    if (guild) guild.shard.send(payload);
+  },
+})
+.on("nodeCreate" , node => console.log(`Node ${node.options.identifier} created.`))
+.on("nodeConnect", node => console.log(`Node ${node.options.identifier} connected`))
+.on("nodeError", (node, error) => console.log(`Node ${node.options.identifier} had an error: ${error.message}`))
+
 
 const cmdFiles = fs.readdirSync("discord/commands").filter((file) => (file.endsWith(".js")))
 
@@ -94,6 +125,7 @@ botClient.on("interactionCreate", (interaction) => {
 
 
 botClient.on("ready", async () => {
+  botClient.erelajs.init(botClient.user.id)
   console.log(`[Melody Stats]: I'm in ${botClient.guilds.cache.size} servers.`)
   const statuses = [["WATCHING", "The T:Riza Corporation"], ["PLAYING", "Some good tunes!"], ["PLAYING", "The legend that was on the cord!"], ["PLAYING", `${process.env.PREFIX}help | ${process.env.PREFIX}info`], ["WATCHING", "Jimmy!"], ["WATCHING", `${botClient.guilds.cache.size} servers!`], ["WATCHING", "melody.triza.dev/invite"], ["PLAYING", "For Support go to: melody.triza.dev/join"]]
   rest.put(Routes.applicationCommands(botClient.user.id), { body: slashcommanddata })
