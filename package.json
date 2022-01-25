@@ -16,7 +16,7 @@
     "url": "https://github.com/TrizaCorporation/melody/issues"
   },
   "dependencies": {
-    "@discordjs/rest": "0.1.0-canary.0",
+    "@discordjs/rest": "0.3.0",
     "@discordjs/voice": "^0.7.5",
     "axios": "^0.25.0",
     "discord-api-types": "^0.26.1",
