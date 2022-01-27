@@ -6,7 +6,7 @@ module.exports = class Command extends commandBase {
     constructor() {
         super("announce", "Staff", ["a"], "Announces a message to all servers.", true, [{ name: "message", required: true, type: 3, description: "What you want to announce." }], true)
     }
-    async execute(type, message, args) {
+    async execute(message, args) {
         if (message.member.permissions.has("ADMINISTRATOR")) {
             let msg = args[0].value
             message.reply({ embeds: [new embedBase("Announce", `Announcing Message "${msg}" to ${bot.Bot.guilds.cache.size} servers.`)] })

@@ -14,23 +14,21 @@ module.exports = class Command extends commandBase {
   constructor() {
     super("play", "Music", ["p", "song"], "Plays Music", false, [{ name: "search_term", type: 3, description: "The song you want to play.", required: true }])
   }
-  async execute(type, message, args) {
-    if (type == "interaction") {
+  async execute(message, args) {
       // message.reply({embeds: [new embedBase("Test", "Test", [{name: "test", value: "test", inline: true}])]})
       let member = message.guild.members.cache.find(member => member.id == message.user.id)
       message.member = member
-    } else {
-      message.react("<a:loading:740018948522901515>")
-    }
+
     if (!message.member.voice.channel) {
-       message.reply({ embeds: [new embedBase("Error", "You must be in a Voice Channel to run this command.")] })
+         message.reply({ embeds: [new embedBase("Error", "You must be in a Voice Channel to run this command.")] })
     } else {
       let serverdata = dataCache.fetchServerCache(message.guild.id)
       if (serverdata && serverdata.data.musicLockEnabled && serverdata.data.musicChannelId !== message.member.voice.channel.id) {
            message.reply({ embeds: [new embedBase("Error", "You must be in the music channel to play songs.")] })
         return;
       }
-      let query
+      let query = args[0].value
+      /*
       if (args[0] && type == "chat") {
         query = args.join(" ")
       } else if (!args[0] && type == "chat") {
@@ -39,6 +37,7 @@ module.exports = class Command extends commandBase {
       } else {
         query = args[0].value
       }
+      */
       try {
         if (!getVCManager(message.guild.id)) {
           voice.joinVoiceChannel({ channelId: message.member.voice.channel.id, guildId: message.guild.id, adapterCreator: message.member.voice.channel.guild.voiceAdapterCreator })
@@ -106,21 +105,21 @@ module.exports = class Command extends commandBase {
         message.reply({ embeds: [embed], components: [components, new componentBase("button", [{ text: "Cancel", style: "DANGER" }])] }).then(msg => {
           botMsg = msg
         })
-        if(type == "chat"){
-        message.reactions.removeAll()
-          .catch(error => console.log('Failed to clear reactions:', error));
-        }
 
         const collector = message.channel.createMessageComponentCollector({ componentType: 'BUTTON', time: 60000 });
 
-        collector.on("collect", i => {
+        collector.on("collect", async i => {
+          let response = await message.fetchReply()
+          if(i.message.id !== response.id){
+            return
+          }
           if (i.user.id == message.member.id) {
             collector.stop()
             i.deferReply()
             if (i.customId == "Cancel") {
               setTimeout(function () {
                 i.editReply({ embeds: [new embedBase("Prompt Cancelled", "The prompt has been successfully cancelled.")] })
-              }, 500)
+              }, 1000)
               return;
             }
             let selectedoption = datatoindex[parseInt(i.customId) - 1]
@@ -129,7 +128,7 @@ module.exports = class Command extends commandBase {
               vcm.addToQueue(selectedoption)
               setTimeout(function () {
                 i.editReply({ embeds: [new embedBase("Added To Queue", `Added ${selectedoption.name} to the queue!`)] })
-              }, 500)
+              }, 1000)
             }
           } else {
             i.reply({ content: "You can't click these buttons.", ephemeral: true })
@@ -137,11 +136,7 @@ module.exports = class Command extends commandBase {
         })
 
         collector.on("end", () => {
-          if (type == "interaction") {
             message.editReply({ embeds: [embed], components: [] })
-          } else {
-            botMsg.edit({ embeds: [embed], components: [] })
-          }
         })
         //Old Code For Handling Songs
         /*
