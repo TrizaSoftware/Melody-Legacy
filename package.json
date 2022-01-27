@@ -1,6 +1,6 @@
 {
   "name": "melody",
-  "version": "1.8.0-p1",
+  "version": "1.8.1",
   "main": "index.js",
   "scripts": {
     "test": "jest",
@@ -18,14 +18,14 @@
   "dependencies": {
     "@discordjs/rest": "0.1.0-canary.0",
     "@discordjs/voice": "^0.7.5",
-    "axios": "^0.24.0",
-    "discord-api-types": "^0.26.0",
+    "axios": "^0.25.0",
+    "discord-api-types": "^0.26.1",
     "discord.js": "^13.1.0",
-    "dotenv": "^10.0.0",
+    "dotenv": "^14.2.0",
     "erela.js": "^2.3.3",
     "erela.js-spotify": "^1.2.0",
     "express": "^4.17.1",
-    "ffmpeg-static": "^4.4.0",
+    "ffmpeg-static": "^4.4.1",
     "jest": "^27.4.3",
     "mongoose": "^6.0.12",
     "multer": "^1.4.3",

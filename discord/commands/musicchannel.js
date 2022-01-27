@@ -42,7 +42,7 @@ module.exports = class Command extends commandBase{
             channel_types: [2]
         }])
     }
-    async execute(type, message, args){
+    async execute(message, args){
         message.deferReply()
         const enabled = args[0].value
         const channel = args[1]

@@ -7,12 +7,10 @@ module.exports = class Command extends commandBase{
     constructor(){
         super("skip", "Music", ["s"], "Skips the song.", false)
     }
-    async execute(type, message, args){
-        if(type == "interaction"){
+    async execute(message, args){
             // message.reply({embeds: [new embedBase("Test", "Test", [{name: "test", value: "test", inline: true}])]})
-            let member = message.guild.members.cache.find(member => member.id == message.user.id)
-            message.member = member
-          }
+        let member = message.guild.members.cache.find(member => member.id == message.user.id)
+        message.member = member
         let datacache = fetchServerCache(message.guild.id)
         let vcm = getVCManager(message.guild.id)
         if(datacache.data.djRoleEnabled && !message.member.roles.cache.has(datacache.data.djRoleId)){

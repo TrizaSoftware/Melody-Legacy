@@ -7,7 +7,7 @@ module.exports = class Command extends commandBase{
     constructor(){
         super("help","Information", ["h", "commands"], "Shows a list of commands.",false)
     }
-    async execute(type, message, args){
+    async execute(message, args){
       let categories = []
       let prefix = process.env.PREFIX
       if(dataCache.fetchServerCache(message.guild.id) && dataCache.fetchServerCache(message.guild.id).data.prefix){
@@ -16,17 +16,9 @@ module.exports = class Command extends commandBase{
         for (let command of Data.Bot.commands){
           let actualcmddata = command[1]
            if (!categories[actualcmddata.category]){
-             if (actualcmddata.slashonly){
-              categories[actualcmddata.category] = {name: actualcmddata.category, value: `/${actualcmddata.name} → ${actualcmddata.desc} | Aliases: ${actualcmddata.aliases}`}
-             }else{
-              categories[actualcmddata.category] = {name: actualcmddata.category, value: `${prefix}${actualcmddata.name} → ${actualcmddata.desc} | Aliases: ${actualcmddata.aliases}`}
-             }
+              categories[actualcmddata.category] = {name: actualcmddata.category, value: `/${actualcmddata.name} → ${actualcmddata.desc}`}
            }else{
-            if (actualcmddata.slashonly){
-              categories[actualcmddata.category].value += `\n/${actualcmddata.name} → ${actualcmddata.desc} | Aliases: ${actualcmddata.aliases}`
-            }else{
-              categories[actualcmddata.category].value += `\n${prefix}${actualcmddata.name} → ${actualcmddata.desc} | Aliases: ${actualcmddata.aliases}`
-            }
+              categories[actualcmddata.category].value += `\n/${actualcmddata.name} → ${actualcmddata.desc}`
            }
         }
         let fields = []

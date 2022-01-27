@@ -2,17 +2,15 @@ const commandBase = require("../utils/commandBase")
 const embedBase = require("../utils/embedBase")
 const componentBase = require("../utils/componentBase")
 const {getVCManager} = require("../utils/voiceConnectionManager")
+const { Interaction } = require("discord.js")
 
 module.exports = class Command extends commandBase{
     constructor(){
         super("queue", "Music", ["q"], "Shows the queue for music.", false)
     }
-    async execute(type, message, args){
-      if (type == "interaction"){
+    async execute(message, args){
         let member = message.guild.members.cache.find(member => member.id == message.user.id)
         message.member = member
-        message.reply({content: "The queue is now loading.", ephemeral: true})
-      }
       if(!getVCManager(message.guild.id)){
         message.reply({embeds: [new embedBase("Error", "Bot is not in a voice channel.")]})
       }else{
@@ -41,24 +39,24 @@ module.exports = class Command extends commandBase{
             if(pages.length !== 1){
               components = [new componentBase("button", [{style: "SUCCESS", text:"⏪", disabled: true},{style: "SUCCESS", text:"⏩"}])]
             }
-            const botMsg = await message.channel.send({embeds:[new embedBase("Queue", `Currently Playing: ${vcm.queue[vcm.currentSongId].name}`, pages[currentpage], `Page 1/${pages.length}`)], components: components })
+             message.reply({embeds:[new embedBase("Queue", `Currently Playing: ${vcm.queue[vcm.currentSongId].name}`, pages[currentpage], `Page 1/${pages.length}`)], components: components })
             const collector = message.channel.createMessageComponentCollector({ componentType: 'BUTTON', time: 300000 });
-            collector.on("collect", i => {
-              if(i.message.id !== botMsg.id){
+            collector.on("collect", async i => {
+              let response = await message.fetchReply()
+              if(i.message.id !== response.id){
                 return
               }
               if (i.user.id == message.member.id) {
                 i.reply({components: []}).catch((err) => {
-                  console.log(err)
                 })
                 if(i.customId == "⏩"){
                   let disabledNext = (currentpage + 1 == pages.length -1)
                   currentpage += 1
-                  i.message.edit({embeds:[new embedBase("Queue", `Currently Playing: ${vcm.queue[vcm.currentSongId].name}`, pages[currentpage],`Page ${currentpage+1}/${pages.length}`)], components: [new componentBase("button", [{style: "SUCCESS", text:"⏪"},{style: "SUCCESS", text:"⏩", disabled: disabledNext}])] })
+                  message.editReply({embeds:[new embedBase("Queue", `Currently Playing: ${vcm.queue[vcm.currentSongId].name}`, pages[currentpage],`Page ${currentpage+1}/${pages.length}`)], components: [new componentBase("button", [{style: "SUCCESS", text:"⏪"},{style: "SUCCESS", text:"⏩", disabled: disabledNext}])] })
                 }else if(i.customId == "⏪"){
                   let disabledNext = (currentpage - 1 == 0)
                   currentpage -= 1
-                  i.message.edit({embeds:[new embedBase("Queue", `Currently Playing: ${vcm.queue[vcm.currentSongId].name}`, pages[currentpage],`Page ${currentpage+1}/${pages.length}`)], components: [new componentBase("button", [{style: "SUCCESS", text:"⏪", disabled: disabledNext},{style: "SUCCESS", text:"⏩"}])] })
+                  message.editReply({embeds:[new embedBase("Queue", `Currently Playing: ${vcm.queue[vcm.currentSongId].name}`, pages[currentpage],`Page ${currentpage+1}/${pages.length}`)], components: [new componentBase("button", [{style: "SUCCESS", text:"⏪", disabled: disabledNext},{style: "SUCCESS", text:"⏩"}])] })
                 }
               }else{
                 i.reply({content: "You can't touch these buttons.", ephemeral: true})
@@ -83,15 +81,15 @@ module.exports = class Command extends commandBase{
             if(pages.length !== 1){
               components = [new componentBase("button", [{style: "SUCCESS", text:"⏪", disabled: true},{style: "SUCCESS", text:"⏩"}])]
             }
-            const botMsg = await message.channel.send({embeds:[new embedBase("Queue", `Currently Playing: ${vcm.queue[0].name}`, pages[currentpage], `Page 1/${pages.length}`)], components: components })
+            message.reply({embeds:[new embedBase("Queue", `Currently Playing: ${vcm.queue[vcm.currentSongId].name}`, pages[currentpage], `Page 1/${pages.length}`)], components: components })
             const collector = message.channel.createMessageComponentCollector({ componentType: 'BUTTON', time: 300000 });
-            collector.on("collect", i => {
-              if(i.message.id !== botMsg.id){
+            collector.on("collect", async i => {
+              let response = await message.fetchReply()
+              if(i.message.id !== response.id){
                 return
               }
               if (i.user.id == message.member.id) {
                 i.reply({components: []}).catch((err) => {
-                  console.log(err)
                 })
                 if(i.customId == "⏩"){
                   let disabledNext = (currentpage + 1 == pages.length -1)

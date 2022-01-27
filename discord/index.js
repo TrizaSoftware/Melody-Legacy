@@ -119,7 +119,7 @@ botClient.on("interactionCreate", (interaction) => {
       interaction.reply({ content: "This command can only be ran in the melody server.", ephemeral: true })
       return;
     }
-    botClient.commands.get(interaction.commandName).execute("interaction", interaction, interaction.options._hoistedOptions)
+    botClient.commands.get(interaction.commandName).execute(interaction, interaction.options._hoistedOptions)
   }
 })
 
@@ -184,7 +184,7 @@ botClient.on("messageCreate", (message) => {
   if (message.content == `<@!${botClient.user.id}>`) {
     let data = dataCache.fetchServerCache(message.guild.id)
     let fields = []
-    fields.push({ name: "Prefix:", value: data.data.prefix || process.env.PREFIX })
+    //fields.push({ name: "Prefix:", value: data.data.prefix || process.env.PREFIX })
     if (data.data.musicLockEnabled !== undefined) {
       fields.push({ name: "Music Channel Enabled:", value: data.data.musicLockEnabled.toString() })
     }
@@ -205,6 +205,8 @@ botClient.on("messageCreate", (message) => {
   if (!message.content.startsWith(prefix)) { return; }
   const data = message.content.split(prefix)[1].split(" ")
   const command = data[0]
+  message.channel.send({ embeds: [new embedBase("Slash Only", `Melody is now slash only. Please try running /${command}`)] })
+  /*
   const args = data.slice(1)
   const cmdfile = botClient.commands.get(command) || botClient.commands.get(botClient.aliases.get(command))
   if (!cmdfile) {
@@ -228,6 +230,7 @@ botClient.on("messageCreate", (message) => {
     }
     cmdfile.execute("chat", message, args)
   }
+  */
 })
 
 botClient.on("voiceStateUpdate", (oldState, newState) => {

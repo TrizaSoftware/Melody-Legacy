@@ -6,7 +6,7 @@ module.exports = class Command extends commandBase{
     constructor(){
       super("voiceinfo", "Information", ["vi"], "Shows all the voice information for Melody.", false)
     }
-    async execute(type, message, args){
+    async execute(message, args){
       if(!getVCManager(message.guild.id)){
         message.reply({embeds: [new embedBase("Error", "No Voice Manager data to show.")]})
       }else{

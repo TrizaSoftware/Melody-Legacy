@@ -14,7 +14,7 @@ module.exports = class Command extends commandBase{
         channel_types: [0]
     }])
     }
-    async execute(type, message, args){
+    async execute(message, args){
         let servercache = dataCache.fetchServerCache(message.guild.id) 
         if(!message.member.permissions.has("MANAGE_GUILD")){
             setTimeout(function(){
