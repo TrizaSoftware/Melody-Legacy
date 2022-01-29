@@ -1,6 +1,6 @@
 {
   "name": "melody",
-  "version": "1.8.1",
+  "version": "1.8.1-p1",
   "main": "index.js",
   "scripts": {
     "test": "jest",
