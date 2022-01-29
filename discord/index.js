@@ -178,9 +178,11 @@ botClient.on("messageCreate", (message) => {
     message.channel.send(":wave: I only respond to messages in servers..")
     return;
   }
+  /*
   if (dataCache.fetchServerCache(message.guild.id) && dataCache.fetchServerCache(message.guild.id).data.prefix) {
     prefix = dataCache.fetchServerCache(message.guild.id).data.prefix
   }
+  */
   if (message.content == `<@!${botClient.user.id}>`) {
     let data = dataCache.fetchServerCache(message.guild.id)
     let fields = []
@@ -205,7 +207,10 @@ botClient.on("messageCreate", (message) => {
   if (!message.content.startsWith(prefix)) { return; }
   const data = message.content.split(prefix)[1].split(" ")
   const command = data[0]
-  message.channel.send({ embeds: [new embedBase("Slash Only", `Melody is now slash only. Please try running /${command}`)] })
+  const cmdfile = botClient.commands.get(command) || botClient.commands.get(botClient.aliases.get(command))
+  if(cmdfile){
+    message.channel.send({ embeds: [new embedBase("Slash Only", `Melody is now slash only. Please try running /${command}`)] })
+  }
   /*
   const args = data.slice(1)
   const cmdfile = botClient.commands.get(command) || botClient.commands.get(botClient.aliases.get(command))
