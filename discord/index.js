@@ -15,7 +15,6 @@ const dataCache = require("./utils/dataCache")
 const { serverdata } = require("../db")
 const { Manager } = require("erela.js")
 const Spotify = require("erela.js-spotify")
-const DBL = require("discordbotlistjs")
 
 botClient.commands = new Collection()
 botClient.aliases = new Collection()
@@ -121,16 +120,6 @@ botClient.on("interactionCreate", (interaction) => {
 
 
 botClient.on("ready", async () => {
-  const dblPoster = new DBL.get(botClient.user.id, process.env.DBL_TOKEN)
-
-  if (process.env.ENVIRONMENT !== "Dev"){
-    function postStats(){
-      dblPoster.post(botClient.guilds.cache.size, botClient.shard.count)
-    }
-    postStats()
-    setInterval(postStats,300000)
-  }
-
   botClient.erelajs.init(botClient.user.id)
   console.log(`[Melody Stats]: I'm in ${botClient.guilds.cache.size} servers.`)
   const statuses = [["WATCHING", "The T:Riza Corporation"], ["PLAYING", "Some good tunes!"], ["PLAYING", "The legend that was on the cord!"], ["PLAYING", `${process.env.PREFIX}help | ${process.env.PREFIX}info`], ["WATCHING", "Jimmy!"], ["WATCHING", `${botClient.guilds.cache.size} servers!`], ["WATCHING", "melody.triza.dev/invite"], ["PLAYING", "For Support go to: melody.triza.dev/join"]]
