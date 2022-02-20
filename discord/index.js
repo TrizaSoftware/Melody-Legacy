@@ -10,11 +10,11 @@ botIntents.add(Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_INTEGRATIONS, Intents.F
 const rest = new REST({ version: "9" }).setToken(process.env.TOKEN)
 const slashcommanddata = []
 const botClient = new Client({ intents: botIntents })
-const { AutoPoster } = require('topgg-autoposter')
 const dataCache = require("./utils/dataCache")
 const { serverdata } = require("../db")
 const { Manager } = require("erela.js")
 const Spotify = require("erela.js-spotify")
+const botlist = require('discord-lister');
 
 botClient.commands = new Collection()
 botClient.aliases = new Collection()
@@ -63,12 +63,6 @@ process.on('uncaughtException', error => {
   }
 });
 
-if(process.env.ENVIRONMENT !== "Dev"){
-  AutoPoster(process.env.TOP_GG_TOKEN, botClient)
-  .on('posted', () => {
-    console.log('Posted stats to Top.gg!')
-  })
-}
 
 cmdFiles.forEach((file) => {
   const module = require(`./commands/${file}`)
@@ -127,7 +121,6 @@ botClient.on("ready", async () => {
   for (let guild of botClient.guilds.cache) {
     new dataCache.serverCache(guild[1].id)
   }
-
   for (let part of await serverdata.find()) {
     new dataCache.serverCache(part.serverId, part)
   }
@@ -135,6 +128,26 @@ botClient.on("ready", async () => {
     let selectedstatus = statuses[Math.floor(Math.random() * statuses.length)]
     botClient.user.setActivity(selectedstatus[1], { type: selectedstatus[0] })
   }, 10000)
+
+  if (process.env.ENVIRONMENT !== "Dev"){
+    function postStats(){
+      let settings = {
+        listings:{
+          topgg: process.env.TOP_GG_TOKEN,
+          discordbotlist: process.env.DBL_TOKEN
+        },
+        clientid: botClient.user.id,
+        servercount: botClient.guilds.cache.size,
+        shardscount: botClient.shard.count,
+        shardsid: botClient.shard.id,
+        usercount: 	0,
+        output: true
+      }
+      botlist.post(settings)
+    }
+    postStats()
+    setInterval(postStats, 180000)
+  }
   /*
   const commands = botClient.application.commands
 
