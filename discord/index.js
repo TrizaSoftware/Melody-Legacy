@@ -130,17 +130,26 @@ botClient.on("ready", async () => {
   }, 10000)
 
   if (process.env.ENVIRONMENT !== "Dev"){
-    function postStats(){
+    async function postStats(){
+      let users = await botClient.shard
+      .broadcastEval(c => c.guilds.cache.reduce((acc, guild) => acc + guild.memberCount, 0))
+      .then(results => {
+        return results.reduce((acc, memberCount) => acc + memberCount, 0);
+      })
+      let servers = await botClient.shard.fetchClientValues('guilds.cache.size')
+      .then(results => {
+        return results.reduce((acc, guildCount) => acc + guildCount, 0);
+      })
       let settings = {
         listings:{
           topgg: process.env.TOP_GG_TOKEN,
           discordbotlist: process.env.DBL_TOKEN
         },
         clientid: botClient.user.id,
-        servercount: botClient.guilds.cache.size,
+        servercount: servers || 0,
         shardscount: botClient.shard.count,
         shardsid: botClient.shard.id,
-        usercount: 	0,
+        usercount: users || 0,
         output: true
       }
       botlist.post(settings)
