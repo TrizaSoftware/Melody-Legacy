@@ -8,7 +8,7 @@ app.use("/invite", (req, res) => {
 })
 
 app.use("/join", (req, res) => {
-  res.redirect("https://discord.gg/JwzQtgEwFE")
+  res.redirect("https://discord.gg/TCk8ZzE8fs")
 })
 
 app.use((req, res) => {
