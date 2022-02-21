@@ -77,7 +77,6 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager {
       voiceConnectionManagers[guildid] = undefined
       this.connection.destroy()
     }
-    /*
     this.connection.on(VoiceConnectionStatus.Disconnected, async (oldState, newState) => {
       try {
         await Promise.race([
@@ -97,7 +96,6 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager {
         this.terminateManager()
       }
     })
-    */
     this.audioPlayer.on(AudioPlayerStatus.Idle, () => {
       this.playingSong = false
       this.eventEmitter.emit("songData", "end")

@@ -27,10 +27,6 @@ module.exports = class Command extends commandBase{
             message.reply({embeds: [new embedBase("Invalid Loop Type", `You can only say "song", "queue", or "stop".`)]})
             return
         }
-       if(type == "interaction"){
-            let member = message.guild.members.cache.find(member => member.id == message.user.id)
-            message.member = member
-        }
         if(message.member.voice.channel && vcm.currentChannelId == message.member.voice.channel.id && vcm.queue[0] !== undefined){
             if(looptype == "stop"){
                 message.reply({embeds: [new embedBase("No Longer Looping", `The ${vcm.loopType} is no longer looping.`)]})
