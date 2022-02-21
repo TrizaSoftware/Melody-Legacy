@@ -38,17 +38,17 @@ module.exports = class Command extends commandBase {
         query = args[0].value
       }
       */
-      try {
-        if (!getVCManager(message.guild.id)) {
-          voice.joinVoiceChannel({ channelId: message.member.voice.channel.id, guildId: message.guild.id, adapterCreator: message.member.voice.channel.guild.voiceAdapterCreator })
-          new VoiceConnectionManager(message.guild.id, message.member.voice.channel.id)
-        } else if (getVCManager(message.guild.id).currentChannelId !== message.member.voice.channel.id) {
-          voice.joinVoiceChannel({ channelId: message.member.voice.channel.id, guildId: message.guild.id, adapterCreator: message.member.voice.channel.guild.voiceAdapterCreator })
-        }
-      } catch (err) {
-        console.log(err)
-        message.channel.send({ content: "An Error Has Occurred: I can't join the voice channel." })
+     if(message.member.voice.channel.permissionsFor(bot.Bot.user.id).has("CONNECT")){
+      if (!getVCManager(message.guild.id)) {
+        voice.joinVoiceChannel({ channelId: message.member.voice.channel.id, guildId: message.guild.id, adapterCreator: message.member.voice.channel.guild.voiceAdapterCreator })
+        new VoiceConnectionManager(message.guild.id, message.member.voice.channel.id)
+      } else if (getVCManager(message.guild.id).currentChannelId !== message.member.voice.channel.id) {
+        voice.joinVoiceChannel({ channelId: message.member.voice.channel.id, guildId: message.guild.id, adapterCreator: message.member.voice.channel.guild.voiceAdapterCreator })
       }
+     }else{
+        message.reply({embeds: [new embedBase("Error", "I can't join the voice channel.")]})
+        return
+     }
       let vcm = getVCManager(message.guild.id)
       if (vcm.eventEmitter._eventsCount == 0) {
         vcm.eventEmitter.on("songData", (type, data) => {
@@ -77,10 +77,10 @@ module.exports = class Command extends commandBase {
           }
         }else{
            message.reply({embeds: [new embedBase("Added To Queue", `Added ${data.tracks[0].author} - ${data.tracks[0].title} to the queue.`)]})
-          vcm.addToQueue(data.tracks[0])
+           vcm.addToQueue(data.tracks[0])
         }
       }else{
-
+        message.deferReply()
         let data = await bot.Bot.erelajs.search(query)
         let fields = []
         let datatoindex = []
@@ -95,17 +95,13 @@ module.exports = class Command extends commandBase {
             }
           }
         } else {
-          message.reply({ embeds: [new embedBase("Error", "No Results.")] })
+          message.editReply({ embeds: [new embedBase("Error", "No Results.")] })
           return
         }
         let embed = new embedBase("Pick a Song", "Please pick a song.", fields, "Prompt cancels in 1 minute")
         let components = new componentBase("button", componentData)
-        let botMsg = undefined
        
-        message.reply({ embeds: [embed], components: [components, new componentBase("button", [{ text: "Cancel", style: "DANGER" }])] }).then(msg => {
-          botMsg = msg
-        })
-
+        message.editReply({ embeds: [embed], components: [components, new componentBase("button", [{ text: "Cancel", style: "DANGER" }])] })
         const collector = message.channel.createMessageComponentCollector({ componentType: 'BUTTON', time: 60000 });
 
         collector.on("collect", async i => {
@@ -115,23 +111,18 @@ module.exports = class Command extends commandBase {
           }
           if (i.user.id == message.member.id) {
             collector.stop()
-            i.deferReply()
             if (i.customId == "Cancel") {
-              setTimeout(function () {
-                i.editReply({ embeds: [new embedBase("Prompt Cancelled", "The prompt has been successfully cancelled.")] })
-              }, 1000)
+                i.reply({ embeds: [new embedBase("Prompt Cancelled", "The prompt has been successfully cancelled.")] })
               return;
             }
             let selectedoption = datatoindex[parseInt(i.customId) - 1]
             let vcm = getVCManager(message.guild.id)
             if (getVCManager(message.guild.id)) {
               vcm.addToQueue(selectedoption)
-              setTimeout(function () {
-                i.editReply({ embeds: [new embedBase("Added To Queue", `Added ${selectedoption.name} to the queue!`)] })
-              }, 1000)
+                i.reply({ embeds: [new embedBase("Added To Queue", `Added ${selectedoption.name} to the queue!`)] })
             }
           } else {
-            i.reply({ content: "You can't click these buttons.", ephemeral: true })
+            i.reply({ embeds: [new embedBase("Error", "You can't click these buttons.")], ephemeral: true })
           }
         })
 

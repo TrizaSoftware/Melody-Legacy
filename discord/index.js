@@ -116,7 +116,7 @@ botClient.on("interactionCreate", (interaction) => {
 botClient.on("ready", async () => {
   botClient.erelajs.init(botClient.user.id)
   console.log(`[Melody Stats]: I'm in ${botClient.guilds.cache.size} servers.`)
-  const statuses = [["WATCHING", "The T:Riza Corporation"], ["PLAYING", "Some good tunes!"], ["PLAYING", "The legend that was on the cord!"], ["PLAYING", `${process.env.PREFIX}help | ${process.env.PREFIX}info`], ["WATCHING", "Jimmy!"], ["WATCHING", `${botClient.guilds.cache.size} servers!`], ["WATCHING", "melody.triza.dev/invite"], ["PLAYING", "For Support go to: melody.triza.dev/join"]]
+  const statuses = [["WATCHING", "The T:Riza Corporation"], ["PLAYING", "Some good tunes!"], ["PLAYING", "The legend that was on the cord!"], ["PLAYING", `/help | /info`], ["WATCHING", "Jimmy!"], ["WATCHING", `${botClient.guilds.cache.size} servers!`], ["WATCHING", "melody.triza.dev/invite"], ["PLAYING", "For Support go to: melody.triza.dev/join"]]
   rest.put(Routes.applicationCommands(botClient.user.id), { body: slashcommanddata })
   for (let guild of botClient.guilds.cache) {
     new dataCache.serverCache(guild[1].id)
