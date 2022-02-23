@@ -100,8 +100,9 @@ module.exports = class Command extends commandBase {
         }
         let embed = new embedBase("Pick a Song", "Please pick a song.", fields, "Prompt cancels in 1 minute")
         let components = new componentBase("button", componentData)
+        
+        setTimeout(function(){message.editReply({ embeds: [embed], components: [components, new componentBase("button", [{ text: "Cancel", style: "DANGER" }])] })},1000)
        
-        message.editReply({ embeds: [embed], components: [components, new componentBase("button", [{ text: "Cancel", style: "DANGER" }])] })
         const collector = message.channel.createMessageComponentCollector({ componentType: 'BUTTON', time: 60000 });
 
         collector.on("collect", async i => {
