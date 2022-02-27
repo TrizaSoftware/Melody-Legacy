@@ -164,7 +164,7 @@ botClient.on("ready", async () => {
         output: true
       }
       botlist.post(settings)
-      axios({url:`https://discords.com/bots/api/bot/${botClient.user.id}`, method: "post", headers: {"Authorization": process.env.DISCORDS_TOKEN}, data: {"server_count":  0}})
+      axios({url:`https://discords.com/bots/api/bot/${botClient.user.id}`, method: "post", headers: {"Authorization": process.env.DISCORDS_TOKEN}, data: {"server_count": servers || 0}})
     }
     postStats()
     setInterval(postStats, 180000)
