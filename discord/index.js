@@ -15,6 +15,7 @@ const { serverdata } = require("../db")
 const { Manager } = require("erela.js")
 const Spotify = require("erela.js-spotify")
 const botlist = require('discord-lister');
+const axios = require("axios")
 
 botClient.commands = new Collection()
 botClient.aliases = new Collection()
@@ -153,6 +154,7 @@ botClient.on("ready", async () => {
         output: true
       }
       botlist.post(settings)
+      axios.post(`https://discords.com/bots/api/bot/${botClient.user.id}`,{headers: {Authorization: process.env.DISCORDS_TOKEN}, data: {server_count: servers})
     }
     postStats()
     setInterval(postStats, 180000)
