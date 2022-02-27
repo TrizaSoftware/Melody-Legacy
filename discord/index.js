@@ -165,6 +165,7 @@ botClient.on("ready", async () => {
         output: true
       }
       botlist.post(settings)
+      axios.post(`https://discords.com/bots/api/bot/${botClient.user.id}`,{headers: {Authorization: process.env.DISCORDS_TOKEN}, data: {server_count: servers}})
     }
     axios.post(`https://discords.com/bots/api/bot/${botClient.user.id}`,{headers: {"Authorization": process.env.DISCORDS_TOKEN}, data: {"server_count": servers || 0}})
     postStats()
