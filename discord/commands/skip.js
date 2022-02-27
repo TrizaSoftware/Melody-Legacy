@@ -20,6 +20,7 @@ module.exports = class Command extends commandBase{
         if(vcm && vcm.currentChannelId == message.member.voice.channel.id && vcm.queue[0] !== undefined){
             message.reply({embeds: [new embedBase("Skipped", "Successfully skipped the song.")]})
             vcm.shouldLoop = false
+            vcm.audioPlayer.unpause()
             vcm.audioPlayer.stop()
         }else{
             message.reply({embeds: [new embedBase("Error", "You can't do that right now.")]})

@@ -30,7 +30,9 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager {
     //this.erelaPlayer = new Player({guild: guildid, selfDeafen: true, voiceChannel: channelid})
     //this.erelaPlayer.connect()
     this.connection = getVoiceConnection(guildid)
+    this.volume = 1
     this.timeoutTimer
+    this.currentAudioResource
     this.playSong = async function (data) {
       //this.erelaPlayer.play(data)
       let stream = ytdl(data.url, {
@@ -39,8 +41,9 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager {
       })
 
       try {
-        let resource = createAudioResource(stream, { inputType: StreamType.Arbitrary })
-        this.audioPlayer.play(resource)
+        this.currentAudioResource = createAudioResource(stream, { inputType: StreamType.WebmOpus, inlineVolume: true })
+        this.currentAudioResource.volume.setVolume(this.volume)
+        this.audioPlayer.play(this.currentAudioResource)
         await entersState(this.audioPlayer, AudioPlayerStatus.Playing, 5_000).then(() => {
           this.eventEmitter.emit("songData", "playing", data)
           this.currentSong = data
@@ -55,6 +58,11 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager {
           this.playSong(data)
         }
       }
+    }
+
+    this.changeVolume = function(number){
+      this.volume = number
+      this.currentAudioResource.volume.setVolume(number)
     }
 
     this.addToQueue = async function (data) {

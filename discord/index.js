@@ -26,7 +26,14 @@ botClient.erelajs = new Manager({
       port: 443,
       password: "MelodyLavalinke93213912321kfdsk",
       secure: true
+    },
+    {
+      host: "lavalink.devz.cloud",
+      port: 443,
+      password: "mathiscool",
+      secure: true
     }
+  
   ],
   plugins: [
     new Spotify({
@@ -96,8 +103,12 @@ function handleGuild(id) {
 
 
 botClient.on("guildCreate", (guild) => {
-  console.log(`[Melody Stats]: I'm in ${botClient.guilds.cache.size} servers.`)
+  console.log(`[Melody Stats]: I'm in ${botClient.guilds.cache.size} servers. +1`)
   new dataCache.serverCache(guild.id)
+})
+
+botClient.on("guildDelete", (guild) => {
+  console.log(`[Melody Stats]: I'm in ${botClient.guilds.cache.size} servers. -1`)
 })
 
 botClient.on("interactionCreate", (interaction) => {
@@ -117,7 +128,6 @@ botClient.on("interactionCreate", (interaction) => {
 botClient.on("ready", async () => {
   botClient.erelajs.init(botClient.user.id)
   console.log(`[Melody Stats]: I'm in ${botClient.guilds.cache.size} servers.`)
-  const statuses = [["WATCHING", "The T:Riza Corporation"], ["PLAYING", "Some good tunes!"], ["PLAYING", "The legend that was on the cord!"], ["PLAYING", `/help | /info`], ["WATCHING", "Jimmy!"], ["WATCHING", `${botClient.guilds.cache.size} servers!`], ["WATCHING", "melody.triza.dev/invite"], ["PLAYING", "For Support go to: melody.triza.dev/join"]]
   rest.put(Routes.applicationCommands(botClient.user.id), { body: slashcommanddata })
   for (let guild of botClient.guilds.cache) {
     new dataCache.serverCache(guild[1].id)
@@ -125,7 +135,8 @@ botClient.on("ready", async () => {
   for (let part of await serverdata.find()) {
     new dataCache.serverCache(part.serverId, part)
   }
-  setInterval(function () {
+  setInterval(async function () {
+    const statuses = [["WATCHING", "The T:Riza Corporation"], ["PLAYING", "Some good tunes!"], ["PLAYING", "The legend that was on the cord!"], ["PLAYING", `/help | /info`], ["WATCHING", "Jimmy!"], ["WATCHING", `${await botClient.shard.fetchClientValues('guilds.cache.size').then(results => {return results.reduce((acc, guildCount) => acc + guildCount, 0);})} servers!`], ["WATCHING", "melody.triza.dev/invite"], ["PLAYING", "For Support go to: melody.triza.dev/join"]]
     let selectedstatus = statuses[Math.floor(Math.random() * statuses.length)]
     botClient.user.setActivity(selectedstatus[1], { type: selectedstatus[0] })
   }, 10000)
@@ -154,7 +165,7 @@ botClient.on("ready", async () => {
         output: true
       }
       botlist.post(settings)
-      axios.post(`https://discords.com/bots/api/bot/${botClient.user.id}`,{headers: {Authorization: process.env.DISCORDS_TOKEN}, data: {server_count: servers})
+      axios.post(`https://discords.com/bots/api/bot/${botClient.user.id}`,{headers: {"Authorization": process.env.DISCORDS_TOKEN}, data: {"server_count": servers || 0}})
     }
     postStats()
     setInterval(postStats, 180000)
