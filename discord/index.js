@@ -28,9 +28,9 @@ botClient.erelajs = new Manager({
       secure: true
     },
     {
-      host: "lavalink.devz.cloud",
+      host: "lavalink.cobaltonline.net",
       port: 443,
-      password: "mathiscool",
+      password: "cobaltlavanode23@",
       secure: true
     }
   
