@@ -28,10 +28,10 @@ botClient.erelajs = new Manager({
       secure: true
     },
     {
-      host: "lavalink.cobaltonline.net",
-      port: 443,
-      password: "cobaltlavanode23@",
-      secure: true
+      host: "lava.link",
+      port: 80,
+      password: "password",
+      secure: false
     }
   
   ],
