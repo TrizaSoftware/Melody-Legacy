@@ -46,6 +46,7 @@ module.exports = class Command extends commandBase{
               if(i.message.id !== response.id){
                 return
               }
+              message.editReply({components:[]})
               if (i.user.id == message.member.id) {
                 i.reply({components: []}).catch((err) => {
                 })
@@ -88,6 +89,7 @@ module.exports = class Command extends commandBase{
               if(i.message.id !== response.id){
                 return
               }
+              message.editReply({components:[]})
               if (i.user.id == message.member.id) {
                 i.reply({components: []}).catch((err) => {
                 })
