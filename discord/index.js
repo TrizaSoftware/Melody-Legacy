@@ -28,10 +28,10 @@ botClient.erelajs = new Manager({
       secure: true
     },
     {
-      host: "lavalink.devz.cloud",
-      port: 443,
-      password: "mathiscool",
-      secure: true
+      host: "lava.link",
+      port: 80,
+      password: "password",
+      secure: false
     }
   
   ],
@@ -140,7 +140,6 @@ botClient.on("ready", async () => {
     let selectedstatus = statuses[Math.floor(Math.random() * statuses.length)]
     botClient.user.setActivity(selectedstatus[1], { type: selectedstatus[0] })
   }, 10000)
-
   if (process.env.ENVIRONMENT !== "Dev"){
     async function postStats(){
       let users = await botClient.shard
@@ -165,7 +164,7 @@ botClient.on("ready", async () => {
         output: true
       }
       botlist.post(settings)
-      axios.post(`https://discords.com/bots/api/bot/${botClient.user.id}`,{headers: {"Authorization": process.env.DISCORDS_TOKEN}, data: {"server_count": servers || 0}})
+      axios({url:`https://discords.com/bots/api/bot/${botClient.user.id}`, method: "post", headers: {"Authorization": process.env.DISCORDS_TOKEN}, data: {"server_count": servers || 0}})
     }
     postStats()
     setInterval(postStats, 180000)
