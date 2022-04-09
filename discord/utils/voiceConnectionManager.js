@@ -43,6 +43,7 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager {
       try {
         this.currentAudioResource = createAudioResource(stream, { inputType: StreamType.WebmOpus, inlineVolume: true })
         this.currentAudioResource.volume.setVolume(this.volume)
+        this.currentAudioResource.encoder.setBitrate(96000)
         this.audioPlayer.play(this.currentAudioResource)
         await entersState(this.audioPlayer, AudioPlayerStatus.Playing, 5_000).then(() => {
           this.eventEmitter.emit("songData", "playing", data)

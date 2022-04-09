@@ -1,6 +1,6 @@
 {
   "name": "melody",
-  "version": "1.8.2",
+  "version": "1.8.2-patch1",
   "main": "index.js",
   "scripts": {
     "test": "jest",
@@ -39,7 +39,7 @@
     "topgg-autoposter": "^2.0.0",
     "tweetnacl": "^1.0.3",
     "usetube": "^2.1.4",
-    "ytdl-core": "^4.10.0"
+    "ytdl-core": "^4.11.0"
   },
   "devDependencies": {
     "@types/node": "^17.0.0",
