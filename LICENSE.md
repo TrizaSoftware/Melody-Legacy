@@ -1,4 +1,4 @@
-Copyright 2020-2021 T:Riza Corporation. All rights reserved.
+Copyright 2020-2022 T:Riza Corporation. All rights reserved.
 
 This is proprietary software. This software and associated documentation
 files (the "Software") may not be used, copied, modified, merged, published,
@@ -15,5 +15,5 @@ THE SOFTWARE.
 
 The following copyright notice shall be included in all pieces of the Software:
 
-Copyright (c) 2020-2021 T:Riza Corporation. All rights reserved.
+Copyright (c) 2020-2022 T:Riza Corporation. All rights reserved.
 The full license is available in the LICENSE file at the root of this project.
