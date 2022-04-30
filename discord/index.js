@@ -28,12 +28,17 @@ botClient.erelajs = new Manager({
       secure: true
     },
     {
-      host: "lava.link",
-      port: 80,
-      password: "password",
-      secure: false
+      host: "node01.marshalxp.xyz",
+      port: 443,
+      password: "marshal",
+      secure: true
+    },
+    {
+      host: "node02.marshalxp.xyz",
+      port: 443,
+      password: "marshal",
+      secure: true
     }
-  
   ],
   plugins: [
     new Spotify({
@@ -197,7 +202,7 @@ botClient.on("debug", (message) => {
 })
 
 botClient.on("warn", console.log)
-
+/*
 botClient.on("messageCreate", (message) => {
   let prefix = process.env.PREFIX
   if(message.author.bot == true){
@@ -207,11 +212,9 @@ botClient.on("messageCreate", (message) => {
     message.channel.send(":wave: I only respond to messages in servers..")
     return;
   }
-  /*
   if (dataCache.fetchServerCache(message.guild.id) && dataCache.fetchServerCache(message.guild.id).data.prefix) {
     prefix = dataCache.fetchServerCache(message.guild.id).data.prefix
   }
-  */
   if (message.content == `<@!${botClient.user.id}>`) {
     let data = dataCache.fetchServerCache(message.guild.id)
     let fields = []
@@ -233,6 +236,7 @@ botClient.on("messageCreate", (message) => {
     }
     message.reply({ embeds: [new embedBase("Server Data", "All of the data Melody has on this server is listed below.", fields)] })
   }
+  
   if (!message.content.startsWith(prefix)) { return; }
   const data = message.content.split(prefix)[1].split(" ")
   const command = data[0]
@@ -240,7 +244,6 @@ botClient.on("messageCreate", (message) => {
   if(cmdfile){
     message.channel.send({ embeds: [new embedBase("Slash Only", `Melody is now slash only. Please try running /${command}`)] })
   }
-  /*
   const args = data.slice(1)
   const cmdfile = botClient.commands.get(command) || botClient.commands.get(botClient.aliases.get(command))
   if (!cmdfile) {
@@ -264,10 +267,11 @@ botClient.on("messageCreate", (message) => {
     }
     cmdfile.execute("chat", message, args)
   }
-  */
 })
+  */
 
-botClient.on("voiceStateUpdate", (oldState, newState) => {
+
+botClient.on("voiceStateUpdate", async (oldState, newState) => {
   if (oldState.channelId !== null) {
     let channeldata = botClient.channels.cache.find(channel => channel.id == oldState.channelId)
     if (channeldata.members.size - 1 == 0) {
@@ -276,6 +280,14 @@ botClient.on("voiceStateUpdate", (oldState, newState) => {
           getVCManager(oldState.guild.id).terminateManager()
         }
       }, 60000)
+    }
+  }
+  if (newState.channel && newState.channel.type == "GUILD_STAGE_VOICE"){
+    try{
+      await newState.guild.me.voice.setSuppressed(false)
+    }catch(err){
+      let vcmanager = getVCManager(newState.channel.guild.id)
+      vcmanager.eventEmitter.emit("songData", "sendMessageInChannel", {embeds: [new embedBase("Error", "Please make sure I can speak in this channel.")]})
     }
   }
 })

@@ -9,7 +9,6 @@ const bot = require("../")
 const { spawn } = require("child_process")
 
 
-
 module.exports = class Command extends commandBase {
   constructor() {
     super("play", "Music", ["p", "song"], "Plays Music", false, [{ name: "search_term", type: 3, description: "The song you want to play.", required: true }])
@@ -65,6 +64,8 @@ module.exports = class Command extends commandBase {
             message.channel.send({ embeds: [new embedBase("Error", `An error has occurred. ${data}`)] })
             vcm.eventEmitter.removeAllListeners(["songData"])
             vcm.terminateManager()
+          } else if(type == "sendMessageInChannel"){
+            message.channel.send(data)
           }
         })
       }

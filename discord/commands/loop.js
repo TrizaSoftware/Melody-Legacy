@@ -29,8 +29,12 @@ module.exports = class Command extends commandBase{
         }
         if(message.member.voice.channel && vcm.currentChannelId == message.member.voice.channel.id && vcm.queue[0] !== undefined){
             if(looptype == "stop"){
-                message.reply({embeds: [new embedBase("No Longer Looping", `The ${vcm.loopType} is no longer looping.`)]})
-                vcm.loopType = undefined
+                if(!vcm.loopType){
+                    message.reply({embeds: [new embedBase("Error", "Nothing is looping.")]})
+                }else{
+                    message.reply({embeds: [new embedBase("No Longer Looping", `The ${vcm.loopType} is no longer looping.`)]})
+                    vcm.loopType = undefined
+                }
             }else{
                 message.reply({embeds: [new embedBase("Now Looping", `The ${looptype} is now looping. 🔁`)]})
                 vcm.loopType = looptype
