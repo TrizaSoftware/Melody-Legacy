@@ -37,6 +37,7 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager {
       //this.erelaPlayer.play(data)
       let stream = ytdl(data.url, {
         filter: "audioonly",
+        fmt: "mp3",
         highWaterMark: 1 << 25,
       })
 
