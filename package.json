@@ -42,8 +42,8 @@
     "ytdl-core": "^4.11.0"
   },
   "devDependencies": {
-    "@types/node": "^17.0.0",
-    "node": "^17.1.0"
+    "@types/node": "^18.0.1",
+    "node": "^18.4.0"
   },
   "keywords": [],
   "description": ""
