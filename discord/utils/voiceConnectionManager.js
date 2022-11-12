@@ -37,13 +37,12 @@ module.exports.VoiceConnectionManager = class VoiceConnectionManager {
       //this.erelaPlayer.play(data)
       let stream = ytdl(data.url, {
         filter: "audioonly",
-        highWaterMark: 1 << 25,
+        quality: "lowestaudio"
       })
 
       try {
         this.currentAudioResource = createAudioResource(stream, { inputType: StreamType.WebmOpus, inlineVolume: true })
         this.currentAudioResource.volume.setVolume(this.volume)
-        this.currentAudioResource.encoder.setBitrate(32000)
         this.audioPlayer.play(this.currentAudioResource)
         await entersState(this.audioPlayer, AudioPlayerStatus.Playing, 5_000).then(() => {
           this.eventEmitter.emit("songData", "playing", data)
