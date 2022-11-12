@@ -7,6 +7,7 @@ const usetube = require("usetube")
 let dataCache = require("../utils/dataCache")
 const bot = require("../")
 const { spawn } = require("child_process")
+const { Collector } = require("discord.js")
 
 
 module.exports = class Command extends commandBase {
@@ -85,14 +86,14 @@ module.exports = class Command extends commandBase {
         let data = await bot.Bot.erelajs.search(query)
         let fields = []
         let datatoindex = []
-        let componentData = []
+        //let componentData = []
         if (data && data.tracks[0]) {
           for (let i = 0; i < 5; i++) {
             let actualNumber = i + 1
             if (data.tracks[i]) {
               fields[i] = { name: `${actualNumber.toString()}.`, value: data.tracks[i].title, inline: false }
               datatoindex[i] = {name: data.tracks[i].title, url: data.tracks[i].uri}
-              componentData[i] = { style: "SUCCESS", text: actualNumber.toString() }
+              //componentData[i] = { style: "SUCCESS", text: actualNumber.toString() }
             }
           }
         } else {
@@ -100,12 +101,38 @@ module.exports = class Command extends commandBase {
           return
         }
         let embed = new embedBase("Pick a Song", "Please pick a song.", fields, "Prompt cancels in 1 minute")
-        let components = new componentBase("button", componentData)
+       // let components = new componentBase("button", componentData)
         
-        setTimeout(function(){message.editReply({ embeds: [embed], components: [components, new componentBase("button", [{ text: "Cancel", style: "DANGER" }])] })},1000)
-       
+        //setTimeout(function(){message.editReply({ embeds: [embed], components: [components, new componentBase("button", [{ text: "Cancel", style: "DANGER" }])] })},1000)
+        setTimeout(function(){
+          message.editReply({embeds: [embed]})
+        }, 1000)
+        const filter = newMessage => newMessage.author.id === message.user.id
+        let messageCollector = message.channel.createMessageCollector({filter, max:1, time: 60000})
+        messageCollector.on('collect', newMessage => {
+          let selectedoption = datatoindex[parseInt(newMessage.content) - 1]
+          if (!selectedoption){
+            newMessage.reply({embeds: [new embedBase("Error", "That's not a valid song.")]})
+            return
+          }else{
+            let vcm = getVCManager(message.guild.id)
+            if (vcm){
+              vcm.addToQueue(selectedoption)
+              newMessage.reply({ embeds: [new embedBase("Added To Queue", `Added ${selectedoption.name} to the queue!`)]})
+            }
+          }
+        })
+        messageCollector.on("end", () => {
+          message.editReply({embeds: [embed], components: [new componentBase("button", [
+           {
+            text: "Completed Prompt", 
+            style: "SUCCESS",
+            disabled: true
+           } 
+          ])] })
+        })
+        /*
         const collector = message.channel.createMessageComponentCollector({ componentType: 'BUTTON', time: 60000 });
-
         collector.on("collect", async i => {
           let response = await message.fetchReply()
           if(i.message.id !== response.id){
@@ -131,6 +158,7 @@ module.exports = class Command extends commandBase {
         collector.on("end", () => {
             message.editReply({ embeds: [embed], components: [] })
         })
+       */
         //Old Code For Handling Songs
         /*
       let filter = m => m.author.id == message.member.id
