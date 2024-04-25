@@ -35,7 +35,7 @@
     "nodemon": "^2.0.13",
     "opusscript": "^0.0.8",
     "soundcloud-downloader": "^1.0.0",
-    "supertest": "^6.1.6",
+    "supertest": "^7.0.0",
     "topgg-autoposter": "^2.0.0",
     "tweetnacl": "^1.0.3",
     "usetube": "^2.1.4",
